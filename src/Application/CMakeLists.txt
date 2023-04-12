@@ -1,4 +1,5 @@
 
 add_executable(xpapers main.cpp)
+target_link_libraries(xpapers PRIVATE utilities)
 
-target_compile_definitions(xpapers PRIVATE MODULE="Main")
+prepare_executable(xpapers)
