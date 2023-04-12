@@ -35,6 +35,7 @@ CTestTestfile.cmake
 # VS code
 .vscode/
 .cache/
+.test/
 
 # Python
 __pycache__
