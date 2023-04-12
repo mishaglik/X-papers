@@ -41,3 +41,6 @@ __pycache__
 
 # Build dir
 build/
+
+# log dir
+log/ 

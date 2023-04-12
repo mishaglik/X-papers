@@ -15,5 +15,6 @@ add_subdirectory(lib)
 # Must be after lib not to affect them.
 # include(cmake/Werror.cmake)
 
+set(COMPONENT_LIST "unknown" CACHE INTERNAL "components")
 
 add_subdirectory(src)
