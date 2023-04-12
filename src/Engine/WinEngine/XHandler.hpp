@@ -105,7 +105,7 @@ class XHandler : XStorage {
     int lookupString(std::string& text) {
         // TODO: add xcompose status
         return XLookupString(&m_event_handler.getInstance()->xkey,
-                             const_cast<char*>(text.c_str()), 255, &m_key, 0);
+                            text.data(), 255, &m_key, 0);
     }
 
     int setForeground(unsigned long fg) {
@@ -114,7 +114,7 @@ class XHandler : XStorage {
 
     int drawString(int x, int y, std::string& text) {
         return XDrawString(m_display, m_window, m_gc, x, y,
-                           const_cast<char*>(text.c_str()), text.size());
+                           text.data(), text.size());
     }
 
    private:
