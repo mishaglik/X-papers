@@ -11,7 +11,7 @@ namespace xppr {
 
 
     template<typename T, typename Err, Err NoErr = 0, Err ErrHasNoValue = 1>
-    requires std::destructible<T> && std::is_scalar_v<Err> && requires(Err err, Err err2) { NoErr != ErrHasNoValue;}
+    requires std::destructible<T> && std::is_scalar_v<Err> && requires{ NoErr != ErrHasNoValue;}
     class Optional
     {
     public:
