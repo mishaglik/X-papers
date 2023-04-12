@@ -10,8 +10,4 @@ namespace xppr {
 
 // timestamp: [ERROR] module: 
 
-log ("F returned error {}", error);
-
-enum class EngineError
-{}; 
 }
