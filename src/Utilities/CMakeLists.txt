@@ -10,7 +10,7 @@ SET(UTILS_SOURCES
 
 
 add_library(utilities ${UTILS_HEADERS} ${UTILS_SOURCES})
-make_component(utilities "utils")
+make_component(utilities Utils)
 target_include_directories(utilities PUBLIC ..)
 target_link_libraries(utilities PUBLIC spdlog)
 
