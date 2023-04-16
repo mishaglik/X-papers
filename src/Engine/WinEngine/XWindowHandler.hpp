@@ -30,7 +30,7 @@ class XWindowHandler {
     friend class XWindowManager;
 
    private:
-    constexpr XWindowHandler(XWindowManager* manager,
+    XWindowHandler(XWindowManager* manager,
                              connection_t* connection,
                              window_t window_id,
                              screen_t* screen,

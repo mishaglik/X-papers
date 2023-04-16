@@ -10,7 +10,6 @@
 #include <cstdint>
 #include <map>
 #include "XWindowHandler.hpp"
-#include "XHandler.hpp"
 
 // Singleton pattern
 
