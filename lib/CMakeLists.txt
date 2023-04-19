@@ -15,3 +15,6 @@ FetchContent_Declare(
         GIT_TAG v1.11.0
 )
 FetchContent_MakeAvailable(spdlog)
+
+find_package(ECM REQUIRED NO_MODULE)
+set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH} PARENT_SCOPE)
