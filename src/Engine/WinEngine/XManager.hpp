@@ -11,8 +11,6 @@
 #include <map>
 #include "XWindowHandler.hpp"
 
-// Singleton pattern
-
 namespace winengine {
 
 using connection_t = xcb_connection_t;
