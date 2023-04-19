@@ -1,6 +1,7 @@
 #ifndef ENGINE_RENDERENGINE_COLOR_HPP
 #define ENGINE_RENDERENGINE_COLOR_HPP
 #include "RenderEngine/GVec.hpp"
+#include <cstddef>
 #include <cstdint>
 #include <Utilities/utils.hpp>
 
@@ -23,15 +24,7 @@ namespace xppr {
             } {}
 
         constexpr Color(float r, float g, float b, float a = 1.f) : vec4f{r, g, b, a} {
-            assert(r <= 1.f);
-            assert(g <= 1.f);
-            assert(b <= 1.f);
-            assert(a <= 1.f);
-
-            assert(r >= 0.f);
-            assert(g >= 0.f);
-            assert(b >= 0.f);
-            assert(a >= 0.f);
+            assertValues();
         }
 
         constexpr explicit Color(const vec4f& vec) : vec4f(vec) {}
@@ -76,9 +69,67 @@ namespace xppr {
 
         constexpr Color& setRGBAf(float r, float g, float b, float a = 255) { return setRf(r).setGf(g).setBf(b).setAf(a);}
 
+        constexpr bool operator==(const Color& oth) const { return toUInt() == oth.toUInt(); }
+        constexpr bool operator!=(const Color& oth) const = default;
 
+        /**
+         * @brief Color modulation.
+         *  Also works as operator*=(const Color& color) due to upcast. 
+         * @param v - vector multiply to
+         * @return constexpr Color& 
+         */
+        constexpr Color& operator*=(const vec4f& v) {
+            (*this)[0] *= v[0];
+            (*this)[1] *= v[1];
+            (*this)[2] *= v[2];
+            (*this)[3] *= v[3];
+            assertValues();
+            return *this;
+        }
+
+        constexpr Color& operator+=(const Color& color) {
+            (*this)[0] += color[0];
+            (*this)[1] += color[1];
+            (*this)[2] += color[2];
+            (*this)[3] += color[3];
+
+            if(rf() > 1.f) [[unlikely]]{ setRf(1.f); }
+            if(gf() > 1.f) [[unlikely]]{ setGf(1.f); }
+            if(bf() > 1.f) [[unlikely]]{ setBf(1.f); }
+            if(af() > 1.f) [[unlikely]]{ setAf(1.f); }
+            
+            assertValues();
+            return *this;
+        }
+
+        constexpr Color& operator-=(const Color& color) {
+            (*this)[0] += color[0];
+            (*this)[1] += color[1];
+            (*this)[2] += color[2];
+            (*this)[3] += color[3];
+
+            if(rf() < 0.f) [[unlikely]]{ setRf(0.f); }
+            if(gf() < 0.f) [[unlikely]]{ setGf(0.f); }
+            if(bf() < 0.f) [[unlikely]]{ setBf(0.f); }
+            if(af() < 0.f) [[unlikely]]{ setAf(0.f); }
+            
+            assertValues();
+            return *this;
+        }
+
+        
     private:
+        constexpr void assertValues() const {
+            assert(rf() <= 1.f);
+            assert(gf() <= 1.f);
+            assert(bf() <= 1.f);
+            assert(af() <= 1.f);
 
+            assert(rf() >= 0.f);
+            assert(gf() >= 0.f);
+            assert(bf() >= 0.f);
+            assert(af() >= 0.f);
+        }
     };
     namespace Colors {
                                            //  R  G  B  A
@@ -93,5 +144,22 @@ namespace xppr {
         constexpr const Color Transparent = 0x00'00'00'00;
     
     }
+
+    constexpr Color operator*(const Color& lhs, const vec4f& rhs) {
+        return Color(lhs) *= rhs;
+    }
+
+    constexpr Color operator*(const vec4f& lhs, const Color& rhs) {
+        return rhs * lhs;
+    }
+
+    constexpr Color operator+(const Color& lhs, const Color& rhs) {
+        return Color(lhs) += rhs;
+    }
+
+    constexpr Color operator-(const Color& lhs, const Color& rhs) {
+        return Color(lhs) -= rhs;
+    }
+
 }
 #endif /* ENGINE_RENDERENGINE_COLOR_HPP */
