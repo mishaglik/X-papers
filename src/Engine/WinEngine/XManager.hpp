@@ -9,6 +9,8 @@
 #include <xcb/xproto.h>
 #include <cstdint>
 #include <map>
+#include <memory>
+#include <mutex>
 #include "XWindowHandler.hpp"
 
 namespace winengine {
@@ -24,77 +26,32 @@ using cookie_t = xcb_void_cookie_t;
 using screen_coord_t = int16_t;
 using win_size_t = uint16_t;
 
-class XWindowManager;
 
-namespace detail {
-
-class XWindowManagerDestroyer {
-   private:
-    XWindowManager* m_instance = nullptr;
-
-   public:
-    ~XWindowManagerDestroyer() {
-        if (m_instance) {
-            // TODO: ask ded about this warning
-            // clang doesn't know if destructor will be public or not
-            delete m_instance;
-        }
-    }
-
-    void initialize(XWindowManager* ptr) { m_instance = ptr; }
-};
-
-}  // namespace detail
+class XWindowHandler;
 
 class XWindowManager {
-   private:
-    // c++ 17 only
-    inline static XWindowManager* m_instance = nullptr;
-    static detail::XWindowManagerDestroyer m_destroyer;
+    private:
+    XWindowManager(const char* display_name, int* screen_n);
 
-   public:
-    XWindowManager(const char* display_name, int* screen_n) {
-        m_connection = xcb_connect(display_name, screen_n);
-
-        m_setup = xcb_get_setup(m_connection);
-        m_iter = xcb_setup_roots_iterator(m_setup);
-
-        m_screen = m_iter.data;
-    }
-
-    static XWindowManager& getInstance() {
-        if (!m_instance) {
-            m_instance = new XWindowManager();
-            m_destroyer.initialize(m_instance);
-        }
-
-        return *m_instance;
-    }
-
-   public:
-    // TODO: add asserts and exceptions
+    public:
+    static std::shared_ptr<XWindowManager> getInstance();
+    
     XWindowHandler* addWindow(screen_coord_t x,
                               screen_coord_t y,
                               win_size_t width,
                               win_size_t height,
-                              win_size_t border_width,
-                              const void* value_list = nullptr) {
-        window_t win_id = xcb_generate_id(m_connection);
+                              win_size_t border_width = 0,
+                              uint32_t value_mask = 0,
+                              const void* value_list = nullptr);
 
-        XWindowHandler* handler =
-            new XWindowHandler(this, m_connection, win_id, m_screen, x, y,
-                               width, height, 0, value_list);
-
-        return handler;
+    std::size_t getTotalWindows() const {
+        return m_total_windows;
     }
 
-   protected:
-    XWindowManager() {}
-    XWindowManager(const XWindowManager&);
-    XWindowManager& operator=(XWindowManager&);
-    ~XWindowManager() {}
+    XWindowManager(XWindowManager const&) = delete;
+    XWindowManager& operator=(XWindowManager const&) = delete;
 
-    friend class detail::XWindowManagerDestroyer;
+    friend class XWindowHandler;
 
    private:
     std::size_t m_total_windows = 0;

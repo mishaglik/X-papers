@@ -31,49 +31,27 @@ class XWindowHandler {
 
    private:
     XWindowHandler(XWindowManager* manager,
-                             connection_t* connection,
                              window_t window_id,
                              screen_t* screen,
                              screen_coord_t x,
                              screen_coord_t y,
                              win_size_t width,
                              win_size_t height,
+                             win_size_t border_width = 0,
                              uint32_t value_mask = 0,
-                             const void* value_list = nullptr)
-        : m_connection(connection), m_manager(manager), m_win_id(window_id) {
-        assert("INVALID connection pointer" && m_connection);
-        assert("INVALID window id" && m_win_id != -1);
-        assert("INVALID screen pointer" && screen);
-
-        xcb_create_window(connection, XCB_COPY_FROM_PARENT, m_win_id,
-                          screen->root, x, y, width, height, 0,
-                          XCB_WINDOW_CLASS_INPUT_OUTPUT, screen->root_visual,
-                          value_mask, value_list);
-    }
+                             const void* value_list = nullptr);
 
     ~XWindowHandler() = default;
 
    public:
-    cookie_t showWindow() {
-        assert("INVALID connection pointer" && m_connection);
-        assert("INVALID window id" && m_win_id != -1);
-
-        return xcb_map_window(m_connection, m_win_id);
-    }
+    cookie_t showWindow();
 
     cookie_t changeProperty(xcb_atom_t property,
                             xcb_atom_t type,
-                            const void* data) {
-        assert("INVALID data pointer" && data);
-
-        return xcb_change_property(m_connection, XCB_PROP_MODE_REPLACE,
-                                   m_win_id, property, type, 8,
-                                   strlen((char*)data), data);
-    }
+                            const void* data);
 
    private:
     window_t m_win_id = 0;
-    connection_t* m_connection = nullptr;
     XWindowManager* m_manager = nullptr;
 };
 
