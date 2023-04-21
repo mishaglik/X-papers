@@ -5,5 +5,5 @@
 int main() {
     xppr::log::init_logger();
     assert("True" != nullptr);
-    //Test WF
+    //Test WF2
 }
