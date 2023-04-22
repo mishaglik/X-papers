@@ -3,7 +3,7 @@
 
 #include <concepts>
 #include <cstdint>
-#include <Utilities/optional.hpp>
+#include <Utilities/defines.hpp>
 namespace xppr {
 
 
@@ -13,18 +13,17 @@ namespace xppr {
 
     /**
      * @brief Base class of all events.
-     * @warn EVERY child class MUST have staic const guid_t  
+     * @warn EVERY child class MUST have staic const guid_t and satisfy Event concept
      */
     class IEvent {
     public:
         /**
          * @brief GUID for event. Used for cast identefication.
-         * 
          */
         const guid_t guid;
 
         template<typename T>
-        using Property = T IEvent::*;
+        using Property = T IEvent::*; // C++ pointer to member
 
         IEvent(guid_t guid) : guid(guid) {}
         virtual ~IEvent() {}

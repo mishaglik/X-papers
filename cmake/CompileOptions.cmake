@@ -9,6 +9,7 @@ if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
     -Wno-implicit-int-conversion 
     -Wno-c++98-compat
     -Wno-c++98-compat-pedantic
+    -Wno-pre-c++17-compat
     -Wno-padded
     -Wno-sign-conversion         # I'd fucked up. I know about sign and unsigned
     -Wno-covered-switch-default  # We cover uncoverable
