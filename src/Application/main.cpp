@@ -1,12 +1,10 @@
 #include <cassert>
 #include <unistd.h>
 #include <Utilities/defines.hpp>
-#include <Engine/WinEngine/XManager.hpp>
-
-
-using winengine::XWindowManager;
+#include <Engine/WinEngine/engine.hpp>
 
 int main() {
     xppr::log::init_logger();
-    assert("True" != nullptr);
+    
+    test_open_window();
 }
