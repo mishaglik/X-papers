@@ -25,6 +25,8 @@ jobs:
     
     - name: Install xcb
       run: sudo apt install xcb
+    - name: Install x11
+      run: libx11-dev
 
     - name: Install ecm
       run: sudo apt install extra-cmake-modules
