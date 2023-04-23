@@ -5,6 +5,51 @@ namespace xppr {
 
 struct guid_t {
     byte_t guid[16] = {};
+    static constexpr guid_t fromFStr(const char str[37]) {
+        guid_t guid;
+
+        auto byteFromHex = [](const char hex[2]) constexpr {
+            byte_t ans = 0;
+            if(hex[0] >= '0' &&  hex[0] <= '9') 
+                ans |= hex[0] - '0';
+            else if(hex[0] >= 'a' &&  hex[0] <= 'f')
+                ans |= hex[0] - 'a';
+            else if(hex[0] >= 'A' &&  hex[0] <= 'F')
+                ans |= hex[0] - 'A';
+            else abort();
+            ans <<= 4;
+            if(hex[0] >= '0' &&  hex[0] <= '9') 
+                ans |= hex[0] - '0';
+            else if(hex[0] >= 'a' &&  hex[0] <= 'f')
+                ans |= hex[0] - 'a';
+            else if(hex[0] >= 'A' &&  hex[0] <= 'F')
+                ans |= hex[0] - 'A';
+            else abort();
+            return ans;
+        };
+
+        guid.guid[ 0] = byteFromHex(&str[ 0]);
+        guid.guid[ 1] = byteFromHex(&str[ 2]);
+        guid.guid[ 2] = byteFromHex(&str[ 4]);
+        guid.guid[ 3] = byteFromHex(&str[ 6]);
+
+        guid.guid[ 4] = byteFromHex(&str[ 9]);
+        guid.guid[ 5] = byteFromHex(&str[11]);
+
+        guid.guid[ 6] = byteFromHex(&str[14]);
+        guid.guid[ 7] = byteFromHex(&str[16]);
+
+        guid.guid[ 8] = byteFromHex(&str[19]);
+        guid.guid[ 9] = byteFromHex(&str[21]);
+
+        guid.guid[10] = byteFromHex(&str[24]);
+        guid.guid[11] = byteFromHex(&str[26]);
+        guid.guid[12] = byteFromHex(&str[28]);
+        guid.guid[13] = byteFromHex(&str[30]);
+        guid.guid[14] = byteFromHex(&str[32]);
+        guid.guid[15] = byteFromHex(&str[34]);
+        return guid;
+    }
 };
 
 /**
@@ -18,6 +63,13 @@ public:
 
     template<typename T>
     using Property = T MetaObject::*; // C++ pointer to member
+
+    template<class T>
+    struct MetaMember {
+        Property<T> m_property;
+        std::string m_name;
+    };
+    
 
     MetaObject(guid_t guid) : m_guid(guid) {}
     virtual ~MetaObject() {}
