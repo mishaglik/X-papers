@@ -13,7 +13,7 @@ public:
     
     virtual ~IWidget() {}
     virtual void draw(RenderWindow& window) const = 0;
-    virtual void update(uint64_t curtime) {}
+    virtual void update(uint64_t /*curtime*/) {}
     virtual void handleEvent(const IEvent&) {}
     
     size_t m_drawOn = 0;

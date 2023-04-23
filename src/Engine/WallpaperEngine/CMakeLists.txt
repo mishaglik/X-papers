@@ -1,8 +1,15 @@
 set(WP_ENGINE_HEADERS
+    Background.hpp
+    Event.hpp
+    Widget.hpp
+    WallpaperEngine.hpp
 )
 
 set(WP_ENGINE_SOURCES
-    engine.cpp
+    Background.cpp
+    Event.cpp
+    Widget.cpp
+    WallpaperEngine.cpp
 )
 
 add_library(wallpaperEngine ${WP_ENGINE_HEADERS} ${WP_ENGINE_SOURCES})

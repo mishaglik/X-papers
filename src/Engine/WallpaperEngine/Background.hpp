@@ -20,7 +20,7 @@ public:
     void setImageList(const Vector<Image>& images);
 private:
     Vector<Texture> m_images;
-    uint64_t m_update_speed;
+    uint64_t m_update_speed = 1'000;
     Sprite m_sprite;
 };
 

@@ -3,6 +3,8 @@
 #include "WallpaperEngine/Widget.hpp"
 #include <RenderEngine/REngine.hpp>
 #include <Utilities/utils.hpp>
+#include <chrono>
+#include <cstddef>
 namespace xppr {
     
 
@@ -13,13 +15,19 @@ namespace xppr {
         WallpaperEngine(const WallpaperEngine&) = delete;
         WallpaperEngine& operator=(const WallpaperEngine&) = delete;
       
+        ~WallpaperEngine();
         void run();
+
+        void setBackgroundImages(const Vector<Image>& image, size_t win);
+        
 
       private:
         Vector<RenderWindow> m_windows;
         Vector<IWidget* > m_widgets;
         bool m_quitted = false;
         void cycle();
+        
+        std::chrono::system_clock::time_point m_start;
     };
 
 }
