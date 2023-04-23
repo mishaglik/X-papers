@@ -22,7 +22,7 @@
 
 namespace xppr::log {
 
-static const constexpr std::string CUR_COMPONENT(XPPR_COMPONENT);
+    static const char CUR_COMPONENT[] = XPPR_COMPONENT;
 
 static const char* COMPONENTS[] = {
     XPPR_COMPONENTS, nullptr};  /// Null-terminated list of all components.
