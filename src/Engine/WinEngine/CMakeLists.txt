@@ -10,9 +10,10 @@ make_component(windowEngine WindowEngine)
 target_include_directories(windowEngine PUBLIC ..)
 
 find_package(XCB REQUIRED)
+find_package(X11 REQUIRED)
 
-target_include_directories(windowEngine PUBLIC ${XCB_INCLUDE_DIR})
-target_link_libraries(windowEngine PUBLIC ${XCB_LIBRARIES})
+target_include_directories(windowEngine PUBLIC ${XCB_INCLUDE_DIR} ${X11_INCLUDE_DIR})
+target_link_libraries(windowEngine PUBLIC ${XCB_LIBRARIES} ${X11_LIBRARIES})
 
 target_link_libraries(windowEngine PRIVATE utilities)
 
