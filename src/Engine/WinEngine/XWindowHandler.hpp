@@ -4,25 +4,8 @@
 ////////////////////////////////////////////////////////////
 /// Headers
 ////////////////////////////////////////////////////////////
-#include <xcb/xcb.h>
-#include <xcb/xcb_atom.h>
-#include <xcb/xproto.h>
-#include <Utilities/optional.hpp>
-#include <cstring>
-#include <memory>
-
+#include "proto.hpp"
 namespace winengine {
-
-using connection_t = xcb_connection_t;
-using setup_t = xcb_setup_t;
-using screen_t = xcb_screen_t;
-using screen_iter_t = xcb_screen_iterator_t;
-using window_t = xcb_window_t;
-using visual_t = xcb_visualid_t;
-using cookie_t = xcb_void_cookie_t;
-
-using screen_coord_t = int16_t;
-using win_size_t = uint16_t;
 
 class XWindowManager;
 
@@ -31,27 +14,39 @@ class XWindowHandler {
 
    private:
     XWindowHandler(XWindowManager* manager,
-                             window_t window_id,
-                             screen_t* screen,
-                             screen_coord_t x,
-                             screen_coord_t y,
-                             win_size_t width,
-                             win_size_t height,
-                             win_size_t border_width = 0,
-                             uint32_t value_mask = 0,
-                             const void* value_list = nullptr);
+                   display_t* display,
+                   pair_t coords,
+                   pair_t size,
+                   int border_width = 0,
+                   class_t class_type = class_t::Parent,
+                   visual_t* visual = nullptr,
+                   uint32_t mask = 0,
+                   win_attr_t* attributes = nullptr);
 
     ~XWindowHandler() = default;
 
    public:
-    cookie_t showWindow();
+    int show();
 
-    cookie_t changeProperty(xcb_atom_t property,
-                            xcb_atom_t type,
-                            const void* data);
+    int hide();
+
+    int changeProperty(atom_t property,
+                       atom_t type,
+                       int format,
+                       int mode,
+                       const uint8_t* data,
+                       int nelements);
+
+    int setBackground(uint64_t color);
+
+    void removeTakeFocusProtocol();
+
+    int clear();
+
+    int setHints(wm_hints_t* hints);
 
    private:
-    window_t m_win_id = 0;
+    win_t m_win_id = 0;
     XWindowManager* m_manager = nullptr;
 };
 

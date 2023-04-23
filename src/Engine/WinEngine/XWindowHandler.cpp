@@ -1,45 +1,87 @@
 #include "XWindowHandler.hpp"
+#include <X11/Xlib.h>
+#include <X11/Xutil.h>
+#include "WinEngine/proto.hpp"
 #include "XManager.hpp"
 
 namespace winengine {
 
 XWindowHandler::XWindowHandler(XWindowManager* manager,
-                               window_t window_id,
-                               screen_t* screen,
-                               screen_coord_t x,
-                               screen_coord_t y,
-                               win_size_t width,
-                               win_size_t height,
-                               win_size_t border_width,
-                               uint32_t value_mask,
-                               const void* value_list)
-    : m_win_id(window_id), m_manager(manager) {
-    assert("INVALID connection pointer" && m_manager->m_connection);
-    assert("INVALID window id" && static_cast<int>(m_win_id) != -1);
-    assert("INVALID screen pointer" && screen);
+                               display_t* display,
+                               pair_t coords,
+                               pair_t size,
+                               int border_width,
+                               class_t class_type,
+                               visual_t* visual,
+                               uint32_t mask,
+                               win_attr_t* attributes) {
+    assert("INVALID XWindowManager pointer" && manager);
+    assert("INVALID display pointer" && display);
 
-    xcb_create_window(m_manager->m_connection, XCB_COPY_FROM_PARENT, m_win_id,
-                      screen->root, x, y, width, height, border_width,
-                      XCB_WINDOW_CLASS_INPUT_OUTPUT, screen->root_visual,
-                      value_mask, value_list);
+    m_win_id = XCreateWindow(display, XDefaultRootWindow(display), coords.x,
+                             coords.y, size.x, size.y, border_width,
+                             XDefaultDepth(display, manager->m_screen),
+                             class_type, visual, mask, attributes);
 }
 
-cookie_t XWindowHandler::showWindow() {
-    assert("INVALID connection pointer" && m_manager->m_connection);
-    assert("INVALID window id" && static_cast<int>(m_win_id) != -1);
-
-    return xcb_map_window(m_manager->m_connection, m_win_id);
+int XWindowHandler::show() {
+    return XMapWindow(m_manager->m_display, m_win_id);
 }
 
-cookie_t XWindowHandler::changeProperty(xcb_atom_t property,
-                                        xcb_atom_t type,
-                                        const void* data) {
+int XWindowHandler::hide() {
+    return XUnmapWindow(m_manager->m_display, m_win_id);
+}
+
+int XWindowHandler::setBackground(const uint64_t color) {
+    return XSetWindowBackground(m_manager->m_display, m_win_id, color);
+}
+
+void XWindowHandler::removeTakeFocusProtocol() {
+    atom_t wm_take_focus_atom;
+    atom_t* protocols = nullptr;
+    int total_protocols = 0;
+
+    wm_take_focus_atom =
+        XInternAtom(m_manager->m_display, "WM_TAKE_FOCUS", False);
+    if (XGetWMProtocols(m_manager->m_display, m_win_id, &protocols,
+                        &total_protocols) != 0) {
+        atom_t* new_list = new atom_t[total_protocols + 1];
+        int new_count = 0;
+
+        for (int protocole_number = 0; protocole_number < total_protocols;
+             protocole_number++) {
+            if (protocols[protocole_number] == wm_take_focus_atom) {
+                continue;
+            }
+
+            new_list[new_count++] = protocols[protocole_number];
+        }
+
+        XSetWMProtocols(m_manager->m_display, m_win_id, new_list, new_count);
+        XFree(protocols);
+
+        delete[] new_list;
+    }
+}
+
+int XWindowHandler::clear() {
+    return XClearWindow(m_manager->m_display, m_win_id);
+}
+
+int XWindowHandler::setHints(wm_hints_t* hints) {
+    assert("INVALID hints pointer" && hints != nullptr);
+    return XSetWMHints(m_manager->m_display, m_win_id, hints);
+}
+
+int XWindowHandler::changeProperty(atom_t property,
+                                   atom_t type,
+                                   int format,
+                                   int mode,
+                                   const uint8_t* data,
+                                   int nelements) {
     assert("INVALID data pointer" && data);
-
-    return xcb_change_property(
-        m_manager->m_connection, XCB_PROP_MODE_REPLACE, m_win_id, property,
-        type, 8, static_cast<uint32_t>(strlen(static_cast<const char*>(data))),
-        data);
+    return XChangeProperty(m_manager->m_display, m_win_id, property, type,
+                           format, mode, data, nelements);
 }
 
 }  // namespace winengine
