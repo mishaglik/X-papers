@@ -17,10 +17,6 @@ class XWindowManager {
    private:
     XWindowManager(const char* display_name = nullptr);
 
-    ~XWindowManager() {
-        XCloseDisplay(m_display);
-    }
-
    public:
     static std::shared_ptr<XWindowManager> getInstance();
 
@@ -39,6 +35,10 @@ class XWindowManager {
     int nextEvent(event_t* event) {
         return XNextEvent(m_display, event);
     } 
+
+    int closeDisplay() {
+        return XCloseDisplay(m_display);
+    }
 
     int changeWindowProperty(XWindowHandler& handler,
                              atom_t property,

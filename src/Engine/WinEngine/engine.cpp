@@ -34,6 +34,7 @@ void test_open_window() {
     }
 
     win->hide();
+    manager->closeDisplay();
 
     return;
 }

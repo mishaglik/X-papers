@@ -1,6 +1,7 @@
 #include "XWindowHandler.hpp"
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
+#include <cstdio>
 #include "WinEngine/proto.hpp"
 #include "XManager.hpp"
 
@@ -14,7 +15,8 @@ XWindowHandler::XWindowHandler(XWindowManager* manager,
                                class_t class_type,
                                visual_t* visual,
                                uint32_t mask,
-                               win_attr_t* attributes) {
+                               win_attr_t* attributes)
+    : m_manager(manager) {
     assert("INVALID XWindowManager pointer" && manager);
     assert("INVALID display pointer" && display);
 
@@ -80,6 +82,8 @@ int XWindowHandler::changeProperty(atom_t property,
                                    const uint8_t* data,
                                    int nelements) {
     assert("INVALID data pointer" && data);
+    assert("INVALID manager" && m_manager);
+    assert("INVALID manager display" && m_manager->m_display);
     return XChangeProperty(m_manager->m_display, m_win_id, property, type,
                            format, mode, data, nelements);
 }

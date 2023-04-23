@@ -3,6 +3,8 @@ set(WINDOW_ENGINE_HEADERS
 
 set(WINDOW_ENGINE_SOURCES
     engine.cpp
+    XManager.cpp
+    XWindowHandler.cpp
 )
 
 add_library(windowEngine ${WINDOW_ENGINE_HEADERS} ${WINDOW_ENGINE_SOURCES})
