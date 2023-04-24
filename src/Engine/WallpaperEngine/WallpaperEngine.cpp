@@ -1,6 +1,6 @@
 #include "WallpaperEngine.hpp"
 #include "WallpaperEngine/Background.hpp"
-#include <bits/chrono.h>
+#include <time.h>
 #include <chrono>
 #include <cstddef>
 
@@ -25,7 +25,9 @@ void WallpaperEngine::run() {
 
 void WallpaperEngine::cycle() {
 
-    uint64_t curtime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - m_start).count();
+    timeval cur_timeval;
+    gettimeofday(&cur_timeval, NULL);
+    uint64_t curtime = cur_timeval.tv_sec * 1000 + cur_timeval.tv_usec / 1000;
 
     // Manage events
 
