@@ -36,6 +36,7 @@ CTestTestfile.cmake
 .vscode/
 .cache/
 .test/
+gi_*
 
 # Python
 __pycache__
