@@ -72,7 +72,7 @@ public:
     
 
     MetaObject(guid_t guid) : m_guid(guid) {}
-    virtual ~MetaObject() {}
+    virtual ~MetaObject() = 0;
 
     template<typename T>
     T& operator[](Property<T> prop) { return this->*prop; }

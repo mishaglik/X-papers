@@ -16,6 +16,7 @@ public:
     const char* getName() const override {return "background";}
     void update(uint64_t curtime) override;
     void draw(RenderWindow& window) const override;
+    bool handleEvent(EventBase&) override {return false;}
 
     void setImageList(const Vector<Image>& images);
 private:

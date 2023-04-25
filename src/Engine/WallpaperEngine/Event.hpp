@@ -8,9 +8,9 @@
 namespace xppr {
 
     
-    class IEvent : public MetaObject{
+    class EventBase : public MetaObject{
       public:
-      IEvent(guid_t guid) : MetaObject(guid) {}
+      EventBase(guid_t guid) : MetaObject(guid) {}
     };
 
 }
