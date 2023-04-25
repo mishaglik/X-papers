@@ -7,11 +7,10 @@
 #include <cstdint>
 namespace xppr {
 
-class IWidget 
+class WidgetBase 
 {
 public:
-    
-    virtual ~IWidget() {}
+    virtual ~WidgetBase() {}
     virtual void draw(RenderWindow& window) const = 0;
     virtual void update(uint64_t /*curtime*/) {}
     virtual void handleEvent(const IEvent&) {}
