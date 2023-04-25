@@ -45,6 +45,8 @@ class XWindowHandler {
 
     int setHints(wm_hints_t* hints);
 
+    const win_t& getInternalHandler() const { return m_win_id; }
+
    private:
     win_t m_win_id = 0;
     XWindowManager* m_manager = nullptr;

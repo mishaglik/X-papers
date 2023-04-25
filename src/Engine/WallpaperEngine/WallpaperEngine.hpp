@@ -2,15 +2,15 @@
 #define ENGINE_WALLPAPERENGINE_WALLPAPERENGINE_HPP
 #include "WallpaperEngine/Widget.hpp"
 #include <RenderEngine/REngine.hpp>
+#include <WinEngine/XWindowHandler.hpp>
 #include <Utilities/utils.hpp>
-#include <chrono>
 #include <cstddef>
-namespace xppr {
-    
+namespace xppr {    
 
     class WallpaperEngine {
+      using XWindowHandler = winengine::XWindowHandler;
       public:
-        WallpaperEngine(const Vector<xppr::WindowHandle>& windows);
+        WallpaperEngine(const Vector<XWindowHandler* >& windows);
 
         WallpaperEngine(const WallpaperEngine&) = delete;
         WallpaperEngine& operator=(const WallpaperEngine&) = delete;
@@ -22,12 +22,23 @@ namespace xppr {
         
 
       private:
-        Vector<RenderWindow> m_windows;
-        Vector<IWidget* > m_widgets;
+
+      struct Display {
+        XWindowHandler* xhandler;
+        RenderWindow renderer;
+        Vector<WidgetBase*> widgets;
+        Display() = default;
+        Display(const Display&) = delete;
+        Display& operator=(const Display&) = delete;
+        ~Display(){
+          for(WidgetBase* widget : widgets) delete widget;
+        }
+      };
+
+        Vector<Display> m_displays;
         bool m_quitted = false;
         void cycle();
         
-        std::chrono::system_clock::time_point m_start;
     };
 
 }

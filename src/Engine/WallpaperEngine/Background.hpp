@@ -9,7 +9,7 @@
 #include <cstdint>
 namespace xppr::wpeng {
 
-class Background : public IWidget {
+class Background : public WidgetBase {
 public:
     explicit Background(Vector2u winsize);
 

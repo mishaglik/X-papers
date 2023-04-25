@@ -2,7 +2,7 @@
 #include "WinEngine/proto.hpp"
 #include "XManager.hpp"
 
-void test_open_window() {
+winengine::XWindowHandler* test_open_window() {
     winengine::win_attr_t attrib;
     attrib.override_redirect = True;
 
@@ -26,15 +26,5 @@ void test_open_window() {
 
     win->clear();
     win->show();
-
-    while (1) {
-        XEvent event;
-
-        manager->nextEvent(&event);
-    }
-
-    win->hide();
-    manager->closeDisplay();
-
-    return;
+    return win;
 }
