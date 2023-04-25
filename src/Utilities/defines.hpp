@@ -29,6 +29,8 @@ namespace xppr {
 
 #endif
 
+#define NOT_IMPLEMENTED xppr::log::critical("{}:{}:{} not implemented", __FILE__, __LINE__, __PRETTY_FUNCTION__); THROW(std::runtime_error("Not implemented"))
+
 // timestamp: [ERROR] module: 
 
 }
