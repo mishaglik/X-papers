@@ -81,7 +81,8 @@ public:
     const T& operator[](Property<T> prop) const { return this->*prop; }
 };
 
-//Maybe namespace?
+namespace rebind {
+
     template<class T>
     concept Meta = std::derived_from<T, MetaObject> && 
                     requires {T::GUID;} && std::same_as<decltype(T::GUID), guid_t> && requires {T::GUID != 0;};
@@ -101,6 +102,6 @@ public:
         }
         return nullptr;
     }
-
+}   
 }
 #endif /* ENGINE_WALLPAPERENGINE_METAOBJECT_HPP */
