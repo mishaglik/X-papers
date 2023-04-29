@@ -26,7 +26,6 @@ winengine::XWindowHandler* test_open_window() {
 
     win->clear();
     win->show();
-    XRRRootToScreen(NULL, 0);
 
     return win;
 }
