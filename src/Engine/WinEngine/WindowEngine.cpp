@@ -102,12 +102,37 @@ void XrandrInfo::scanMonitors() {
     }
 }
 
+DisplayInfo::DisplayInfo(std::string& display)
+    : m_display_name(display.c_str()) {
+    display_t* connection = XOpenDisplay(m_display_name);
+    if (m_display_name == nullptr) {
+        THROW(WinEngineError(DisplayOpenError));
+    }
+
+    int count = XScreenCount(connection);
+
+    m_screen_count = static_cast<std::size_t>(count);
+    spdlog::debug("Display %100s has %zu screens\n", m_display_name,
+                  m_screen_count);
+
+    m_dimensions = std::vector<upair_t>(m_screen_count);
+
+    for (int screen_idx = 0; screen_idx < static_cast<int>(m_screen_count);
+         ++screen_idx) {
+        m_dimensions[screen_idx] = {
+            static_cast<std::size_t>(XDisplayWidth(connection, screen_idx)),
+            static_cast<std::size_t>(XDisplayHeight(connection, screen_idx))};
+    }
+
+    XCloseDisplay(connection);
+}
+
 WindowEngine::WindowEngine() {
     std::exception_ptr current_exception;
     try {
         enumerateDisplays();
     } catch (WinEngineError& err) {
-        spdlog::debug("%s\n", err.what());
+        spdlog::debug("Exception caught: %s\n", err.what());
 
         current_exception = std::current_exception();
         std::rethrow_exception(current_exception);

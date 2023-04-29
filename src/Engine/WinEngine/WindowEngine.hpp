@@ -54,7 +54,7 @@ class MonitorInfo {
           m_dimensions(dimensions),
           m_position(position),
           m_primary(is_primary) {
-        // TODO: put log "monitor {name}: {x} {y} found"
+        spdlog::debug("monitor %100s: %i %i found\n", m_name, m_position.x, m_position.y);
     }
 
    public:
@@ -98,6 +98,10 @@ class XrandrInfo {
         return m_monitors_info[index];
     }
 
+    std::size_t getMonitorsCount() const {
+        return m_monitors_cnt;
+    }
+
    private:
     explicit XrandrInfo(int active_only = True,
                         const char* requested_display = nullptr);
@@ -121,30 +125,7 @@ class DisplayInfo {
    private:
     explicit DisplayInfo() = default;
 
-    DisplayInfo(std::string& display) : m_display_name(display.c_str()) {
-        display_t* connection = XOpenDisplay(m_display_name);
-        if (m_display_name == nullptr) {
-            THROW(WinEngineError(DisplayOpenError));
-        }
-
-        int count = XScreenCount(connection);
-
-        m_screen_count = static_cast<std::size_t>(count);
-        spdlog::debug("Display %100s has %zu screens\n", m_display_name,
-                      m_screen_count);
-
-        m_dimensions = std::vector<upair_t>(m_screen_count);
-
-        for (int screen_idx = 0; screen_idx < static_cast<int>(m_screen_count);
-             ++screen_idx) {
-            m_dimensions[screen_idx] = {
-                static_cast<std::size_t>(XDisplayWidth(connection, screen_idx)),
-                static_cast<std::size_t>(
-                    XDisplayHeight(connection, screen_idx))};
-        }
-
-        XCloseDisplay(connection);
-    }
+    DisplayInfo(std::string& display);
 
    public:
     std::size_t getScreenCount() const { return m_screen_count; }
