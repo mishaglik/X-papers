@@ -17,7 +17,7 @@ void test_open_window() {
     for (std::size_t i = 0; i < randrinfo.getMonitorsCount(); ++i) {
         std::cout << i << ' ' << randrinfo[i].getName() << ' ' << randrinfo[i].getIndex() << std::endl;
     }
-    /*
+    
     winengine::win_attr_t attrib;
     attrib.override_redirect = True;
 
@@ -51,6 +51,6 @@ void test_open_window() {
 
     win->hide();
     manager->closeDisplay();
-    */
+    
     return;
 }
