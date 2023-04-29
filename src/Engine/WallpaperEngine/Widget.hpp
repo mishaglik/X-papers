@@ -21,9 +21,9 @@ public:
      */
     virtual bool handleEvent(EventBase&) = 0;
     
-    size_t m_drawOn = 0;
+    size_t m_display_idx = 0;
 
-    virtual const char* getName() const {return nullptr;}
+    virtual const char* getName() const = 0;
 };
 }
 
