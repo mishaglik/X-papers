@@ -16,7 +16,8 @@
 namespace winengine {
 
 enum WinEngineErrTypes {
-    NoX11UnixDir = 0,
+    NoError,
+    NoX11UnixDir,
     DisplayOpenError,
     RandRVersionError,
     RandRUnaccessible,
@@ -48,14 +49,7 @@ class MonitorInfo {
                 pair_t position,
                 upair_t dimensions,
                 bool is_primary,
-                std::size_t monitor_index)
-        : m_name(name),
-          m_index(monitor_index),
-          m_dimensions(dimensions),
-          m_position(position),
-          m_primary(is_primary) {
-        spdlog::debug("monitor %100s: %i %i found\n", m_name, m_position.x, m_position.y);
-    }
+                std::size_t monitor_index);
 
    public:
     const char* getName() const {
@@ -94,7 +88,7 @@ class XrandrInfo {
     friend class WindowEngine;
 
    public:
-    MonitorInfo& operator[](std::size_t index) {
+    const MonitorInfo& operator[](const std::size_t index) const {
         return m_monitors_info[index];
     }
 
@@ -106,7 +100,7 @@ class XrandrInfo {
     explicit XrandrInfo(int active_only = True,
                         const char* requested_display = nullptr);
 
-    void scanMonitors();
+    WinEngineErrTypes scanMonitors();
 
     // it would make sense to make this std::size_t but XRRGetMonitors require
     // 'int'
@@ -125,15 +119,15 @@ class DisplayInfo {
    private:
     explicit DisplayInfo() = default;
 
-    DisplayInfo(std::string& display);
+    DisplayInfo(const std::string& display);
 
    public:
     std::size_t getScreenCount() const { return m_screen_count; }
 
-    std::vector<upair_t>& getDimensions() { return m_dimensions; }
+    const std::vector<upair_t>& getDimensions() const { return m_dimensions; }
 
     const char* getDisplayName() const {
-        // CRINGE, added here just in case
+        // CRINGE, added this function just in case
         return m_display_name;
     }
 
@@ -154,7 +148,7 @@ class WindowEngine {
         return current_engine;
     }
 
-    DisplayInfo& operator[](std::size_t index) { return m_displays[index]; }
+    const DisplayInfo& operator[](const std::size_t index) const { return m_displays[index]; }
 
     XrandrInfo& getRandRInfo() { return m_info; }
 
@@ -168,10 +162,10 @@ class WindowEngine {
     }
 
    private:
-    void enumerateDisplays();
+    WinEngineErrTypes enumerateDisplays();
 
    private:
-    const char* X11_UNIX_DIRECTORY = "/tmp/.X11-unix";
+    static const char* X11_UNIX_DIRECTORY;
 
     std::size_t m_displays_cnt = 0;
     std::vector<DisplayInfo> m_displays;

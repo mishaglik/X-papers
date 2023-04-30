@@ -13,6 +13,10 @@ WinEngineError::WinEngineError(WinEngineErrTypes type) noexcept
 
 const char* WinEngineError::what() const noexcept {
     switch (m_err_code) {
+        case NoError: {
+            return "No error. If this gets thrown, it's a bug.";
+        }
+
         case NoX11UnixDir: {
             return "Can't open '/tmp/.X11-unix' directory";
         }
@@ -41,23 +45,32 @@ const char* WinEngineError::what() const noexcept {
     return "Unknown error";
 }
 
+MonitorInfo::MonitorInfo(const char* name,
+                         pair_t position,
+                         upair_t dimensions,
+                         bool is_primary,
+                         std::size_t monitor_index)
+    : m_name(name),
+      m_index(monitor_index),
+      m_dimensions(dimensions),
+      m_position(position),
+      m_primary(is_primary) {
+    spdlog::debug("monitor %100s: %i %i found\n", m_name, m_position.x,
+                  m_position.y);
+}
+
 XrandrInfo::XrandrInfo(int active_only, const char* requested_display)
     : m_active_only(active_only), m_requested_display(requested_display) {
-    std::exception_ptr current_exception;
-    try {
-        scanMonitors();
-    } catch (WinEngineError& err) {
-        spdlog::debug("%s\n", err.what());
-
-        current_exception = std::current_exception();
-        std::rethrow_exception(current_exception);
+    auto errcode = scanMonitors();
+    if (errcode != NoError) {
+        THROW(WinEngineError(errcode));
     }
 }
 
-void XrandrInfo::scanMonitors() {
+WinEngineErrTypes XrandrInfo::scanMonitors() {
     display_t* current_display = XOpenDisplay(m_requested_display);
     if (current_display == nullptr) {
-        THROW(WinEngineError(DisplayOpenError));
+        return DisplayOpenError;
     }
 
     // unnecessary external variables that will actually never be used lol
@@ -67,13 +80,13 @@ void XrandrInfo::scanMonitors() {
         !XRRQueryVersion(current_display, &major_version, &minor_version)) {
         XCloseDisplay(current_display);
 
-        THROW(WinEngineError(RandRUnaccessible));
+        return RandRUnaccessible;
     }
 
     if (major_version <= 1 && minor_version < 5) {
         XCloseDisplay(current_display);
 
-        THROW(WinEngineError(RandRVersionError));
+        return RandRVersionError;
     }
 
     const win_t root_win =
@@ -100,9 +113,11 @@ void XrandrInfo::scanMonitors() {
 
         m_monitors_info[mon_idx] = current_monitor_info;
     }
+
+    return NoError;
 }
 
-DisplayInfo::DisplayInfo(std::string& display)
+DisplayInfo::DisplayInfo(const std::string& display)
     : m_display_name(display.c_str()) {
     display_t* connection = XOpenDisplay(m_display_name);
     if (m_display_name == nullptr) {
@@ -127,22 +142,19 @@ DisplayInfo::DisplayInfo(std::string& display)
     XCloseDisplay(connection);
 }
 
-WindowEngine::WindowEngine() {
-    std::exception_ptr current_exception;
-    try {
-        enumerateDisplays();
-    } catch (WinEngineError& err) {
-        spdlog::debug("Exception caught: %s\n", err.what());
+const char* WindowEngine::X11_UNIX_DIRECTORY = "/tmp/.X11-unix";
 
-        current_exception = std::current_exception();
-        std::rethrow_exception(current_exception);
+WindowEngine::WindowEngine() {
+    auto errcode = enumerateDisplays();
+    if (errcode != NoError) {
+        THROW(WinEngineError(errcode));
     }
 }
 
-void WindowEngine::enumerateDisplays() {
+WinEngineErrTypes WindowEngine::enumerateDisplays() {
     DIR* x11_unix_dir = opendir(X11_UNIX_DIRECTORY);
     if (x11_unix_dir == nullptr) {
-        THROW(WinEngineError(NoX11UnixDir));
+        return NoX11UnixDir;
     }
 
     struct dirent* current_dirent;
@@ -163,6 +175,8 @@ void WindowEngine::enumerateDisplays() {
     }
 
     closedir(x11_unix_dir);
+
+    return NoError;
 }
 
 }  // namespace winengine

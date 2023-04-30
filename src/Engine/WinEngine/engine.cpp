@@ -1,4 +1,6 @@
 #include "engine.hpp"
+#include <X11/X.h>
+#include <X11/Xatom.h>
 #include <iostream>
 #include "WinEngine/proto.hpp"
 #include "WindowEngine.hpp"
@@ -15,9 +17,10 @@ void test_open_window() {
     auto randrinfo = engine.getRandRInfo();
 
     for (std::size_t i = 0; i < randrinfo.getMonitorsCount(); ++i) {
-        std::cout << i << ' ' << randrinfo[i].getName() << ' ' << randrinfo[i].getIndex() << std::endl;
+        std::cout << i << ' ' << randrinfo[i].getName() << ' '
+                  << randrinfo[i].getIndex() << std::endl;
     }
-    
+
     winengine::win_attr_t attrib;
     attrib.override_redirect = True;
 
@@ -31,6 +34,15 @@ void test_open_window() {
     win->changeProperty(wintype, XA_ATOM, 32, PropModeReplace,
                         (unsigned char*)&desktop, 1);
 
+    unsigned int ints[2];
+    ints[0] = 0xFFFFFFFF;
+    ints[1] = 2;
+
+    auto wm_desktop = manager->createAtom("_NET_WM_DESKTOP", True);
+
+    win->changeProperty(wm_desktop, XA_ATOM, 32, PropModeReplace,
+                        (unsigned char*)ints, 2);
+
     // auto wm_state = manager->createAtom("_NET_WM_STATE", true);
     // auto wm_fullscreen = manager->createAtom("_NET_WM_STATE_FULLSCREEN",
     // true);
@@ -38,7 +50,7 @@ void test_open_window() {
     // win->changeProperty(wm_state, XA_ATOM, 32, PropModeReplace,
     //                     (unsigned char*)&wm_fullscreen, 1);
 
-    win->setBackground(0xFFFFFF);  // { width, heigth }
+    win->setBackground(0xFFFFFF);
 
     win->clear();
     win->show();
@@ -51,6 +63,6 @@ void test_open_window() {
 
     win->hide();
     manager->closeDisplay();
-    
+
     return;
 }
