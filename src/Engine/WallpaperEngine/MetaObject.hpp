@@ -1,10 +1,13 @@
 #ifndef ENGINE_WALLPAPERENGINE_METAOBJECT_HPP
 #define ENGINE_WALLPAPERENGINE_METAOBJECT_HPP
-#include <Utilities/utils.hpp>
+#include <concepts>
+#include <cstdint>
+#include <string>
+#include <vector>
 namespace xppr {
 
 struct guid_t {
-    byte_t guid[16] = {};
+    char guid[16] = {};
     static constexpr guid_t fromFStr(const char str[37]);
 };
 
@@ -21,7 +24,7 @@ constexpr guid_t guid_t::fromFStr(const char str[37]) {
      * @brief Supporting lambda to transform 2 hex digits to byte.
      */
     auto byteFromHex = [](const char hex[2]) constexpr {
-        byte_t ans = 0;
+        char ans = 0;
         if(hex[0] >= '0' &&  hex[0] <= '9') 
             ans |= hex[0] - '0';
         else if(hex[0] >= 'a' &&  hex[0] <= 'f')
@@ -75,13 +78,6 @@ public:
     template<typename T>
     using Property = T MetaObject::*; // C++ pointer to member
 
-    template<class T>
-    struct MetaMember {
-        Property<T> m_property;
-        std::string m_name;
-    };
-    
-
     MetaObject(guid_t guid) : m_guid(guid) {}
     virtual ~MetaObject() = 0;
 
@@ -90,6 +86,59 @@ public:
 
     template<typename T>
     const T& operator[](Property<T> prop) const { return this->*prop; }
+};
+
+
+namespace meta {
+
+    template<class T>
+    concept Metatype = std::same_as<T, uint64_t> || std::same_as<T, void* > || std::same_as<T, char*> || 
+        (std::is_pointer<T>::is_pointer && std::derived_from<typename std::remove_pointer<T>::type, MetaObject>);
+
+    enum MetatypeFmt : char {
+        Int = 'd',
+        Str = 's',
+        Buf = 'p',
+        Obj = 'o',
+    };
+
+
+    struct ArgPack {
+        std::string m_signature;
+        void* m_data[];
+    };
+
+    struct MetaFunction {
+        std::string m_name;
+        std::string m_signature;
+        int (*m_callback)(ArgPack* ap);
+    };
+
+    struct MetaMember {
+        std::string m_name;
+        char type;
+        void* data;
+    };
+
+    template<class T>
+    int ArgPackCall(T t, ArgPack* ap);
+
+    template<Metatype... Args, size_t... Idx>
+    int ArgPackCallImpl(int(*f)(Args...), ArgPack* ap, std::index_sequence<Idx...> = std::index_sequence_for<Args...>{}) {
+        return f(reinterpret_cast<Args>(ap->m_data[Idx])...);
+    }
+
+    template<Metatype... Args>
+    int ArgPackCall(int(*f)(Args...), ArgPack* ap) {
+        return ArgPackCallImpl(f, ap);
+    }
+
+    struct MetaClass : MetaObject {
+        std::string m_name;
+        std::vector<MetaFunction> m_methods;
+        std::vector<MetaMember  > m_members;
+    };
+
 };
 
 namespace rebind {

@@ -1,5 +1,5 @@
 #include "log.hpp"
-
+#include <iostream>
 namespace xppr {
     using byte_t = char;
 

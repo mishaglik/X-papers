@@ -3,12 +3,11 @@
 
 #include <concepts>
 #include <cstdint>
-#include <Utilities/defines.hpp>
 #include "MetaObject.hpp"
 namespace xppr {
 
     
-    class EventBase : public MetaObject{
+    class EventBase : public MetaObject {
       public:
       EventBase(guid_t guid) : MetaObject(guid) {}
     };

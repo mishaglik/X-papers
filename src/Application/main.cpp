@@ -14,7 +14,7 @@ int main() {
     // xppr::Vector<xppr::Image> bg(2);
     // bg[0].loadFromFile("/home/gms/I1.jpg");
     // bg[1].loadFromFile("/home/gms/I2.jpg");
-    xppr::WallpaperEngine app({win});
+    xppr::wpeng::WallpaperEngine app({win});
     // app.setBackgroundImages(bg, 0);
     app.run();   
 

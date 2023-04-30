@@ -1,10 +1,10 @@
 #include "WallpaperEngine.hpp"
 #include "WallpaperEngine/Background.hpp"
+#include "WallpaperEngine/Connector.hpp"
 #include <time.h>
 #include <cstddef>
-
-namespace xppr {
-using namespace wpeng;
+#include <dlfcn.h>
+namespace xppr::wpeng {
 
 WallpaperEngine::WallpaperEngine(const Vector<XWindowHandler* >& windows) : m_displays(windows.size())
 {
@@ -51,5 +51,24 @@ void WallpaperEngine::setBackgroundImages(const Vector<Image>& image, size_t win
 
 WallpaperEngine::~WallpaperEngine() {}
 
+WPError WallpaperEngine::loadPlugin(const char* filename) {
+    void* handle = dlopen(filename, RTLD_NOW | RTLD_LOCAL); //TODO: dlclose
+    if(!handle) {
+        xppr::log::error("loadPlugin \"{}\" failed with error: {}", filename, dlerror());
+        return WPError::Invalid;
+    }
+
+    using Initer = void(*)(ApplicationAPI);
+
+    Initer initer = reinterpret_cast<Initer>(dlsym(handle, "init_plugin"));
+    if(!initer) {
+        xppr::log::error("loadPlugin \"{}\" failed with error: {}", filename, dlerror());
+        dlclose(handle);
+        return WPError::Invalid;
+    }
+
+    initer(ApplicationAPI(this));
+    return WPError::Ok;
+}
 
 }

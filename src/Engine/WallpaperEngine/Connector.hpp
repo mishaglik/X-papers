@@ -5,33 +5,43 @@
     This header is to be used as exported to write plugin. 
 */
 
-#include <WallpaperEngine/Event.hpp>
-#include <WallpaperEngine/Widget.hpp>
-namespace xppr::wpeng {
-    class WallpaperEngine;
+#include <Engine/WallpaperEngine/Event.hpp>
+#include <Engine/WallpaperEngine/Widget.hpp>
+#include <Engine/WallpaperEngine/MetaObject.hpp>
+namespace xppr {
+    namespace wpeng {
+        class WallpaperEngine;
+    }
     class ConnectorBase;
 
-    enum APIError {
+    /**
+     * @brief Must be sync with xppr::wpeng::WPError
+     * 
+     */
+    enum APIError : uint64_t {
         OK = 0,
         Invalid,
+        Unknown,
     };
 
     // Pimple to WallpaperEngine both uninifing api and hiding class. 
     class ApplicationAPI {
-        ApplicationAPI(WallpaperEngine& engine) : m_wallpaper(engine) {}
-
+        ApplicationAPI(wpeng::WallpaperEngine* engine) : m_wallpaper(engine) {}
+    public:
         APIError addWidget(WidgetBase* widget);
         APIError addConnector(ConnectorBase* connector);
         APIError loadPlugin(const char* path);
     private:
-        WallpaperEngine& m_wallpaper;
+        friend class wpeng::WallpaperEngine;
+        wpeng::WallpaperEngine* m_wallpaper;
     };
 
     /* Connector plugins must implement next methods 
-        extern void init_plugin(ApplicationAPI* api);
+        extern ConnectorBase* init_plugin(ApplicationAPI api);
     */
 
     class ConnectorBase {
+    public:
         virtual void update(uint64_t curtime) = 0;
         virtual void widgetCreated(WidgetBase* widget) = 0;
         virtual ~ConnectorBase() = 0;
