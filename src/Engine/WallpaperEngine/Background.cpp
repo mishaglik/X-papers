@@ -1,12 +1,11 @@
 #include "Background.hpp"
-#include <SFML/System/Vector2.hpp>
 #include <cassert>
 #include <cstddef>
 #include <cstdint>
 
 namespace xppr::wpeng {
 
-    Background::Background(Vector2u winsize) {
+    Background::Background(Vector2u winsize) : m_meta(this) {
     }
 
     void Background::update(uint64_t curtime) {
@@ -30,4 +29,23 @@ namespace xppr::wpeng {
         }
         m_sprite.setTexture(m_images[0]);
     }
+
+    meta::MetaClass* setImage(meta::ArgPack* ap) {
+        Image img;
+        img.loadFromFile(reinterpret_cast<char*>(ap->m_data[0]));
+        reinterpret_cast<Background::BgMeta*>(ap->self)->m_bg->setImageList({img});
+        return nullptr;
+    }
+
+    static meta::MetaFunction BgMeths[] = {
+        {"setImage", "s", setImage},
+        {NULL}
+    };
+
+    Background::BgMeta::BgMeta(Background* bg) : m_bg(bg) {
+        m_methods = BgMeths;
+        m_members = 0;
+        m_name = "bg";
+    }
+    
 }

@@ -2,11 +2,12 @@
 #define ENGINE_WALLPAPERENGINE_WIDGET_HPP
 
 #include "Engine/WallpaperEngine/Event.hpp"
+#include "Engine/RenderEngine/REngine.hpp"
 #include <cstddef>
 #include <cstdint>
 
 namespace xppr {
-class RenderWindow;
+// class RenderWindow;
 class WidgetBase 
 {
 public:
@@ -24,6 +25,7 @@ public:
     size_t m_display_idx = 0;
 
     virtual const char* getName() const = 0;
+    virtual meta::MetaClass* getMeta() = 0;
 };
 }
 

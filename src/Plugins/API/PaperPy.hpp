@@ -1,7 +1,12 @@
 #include <Engine/WallpaperEngine/Connector.hpp>
 
-void init_module(xppr::ApplicationAPI api);
+extern "C" void init_plugin(xppr::ApplicationAPI api);
 
+class PyConnector final : public xppr::ConnectorBase {
+public:
+    virtual void update(uint64_t) override {}
+    virtual void registerClass(xppr::meta::MetaClass* meta) override;
+    virtual ~PyConnector() override {}
+};
 
-struct PyObject;
-PyObject* metaToPyObject(xppr::meta::MetaClass* meta);
+xppr::meta::MetaClass* load_module(xppr::meta::ArgPack* ap);

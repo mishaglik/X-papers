@@ -26,8 +26,8 @@ namespace xppr {
 
     // Pimple to WallpaperEngine both uninifing api and hiding class. 
     class ApplicationAPI {
-        ApplicationAPI(wpeng::WallpaperEngine* engine) : m_wallpaper(engine) {}
     public:
+        ApplicationAPI(wpeng::WallpaperEngine* engine) : m_wallpaper(engine) {}
         APIError addWidget(WidgetBase* widget);
         APIError addConnector(ConnectorBase* connector);
         APIError loadPlugin(const char* path);
@@ -42,9 +42,10 @@ namespace xppr {
 
     class ConnectorBase {
     public:
+        ConnectorBase() = default;
         virtual void update(uint64_t curtime) = 0;
-        virtual void widgetCreated(WidgetBase* widget) = 0;
-        virtual ~ConnectorBase() = 0;
+        virtual void registerClass(meta::MetaClass* meta) = 0;
+        virtual ~ConnectorBase() {}
     };
 }
 

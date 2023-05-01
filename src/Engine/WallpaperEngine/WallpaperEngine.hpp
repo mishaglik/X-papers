@@ -32,6 +32,7 @@ namespace xppr::wpeng {
         WPError loadPlugin(const char* filename);
         WPError addWidget(WidgetBase* widget);
         WPError addConnector(ConnectorBase* connector);
+        WPError registerClass(xppr::meta::MetaClass* meta);
 
       private:
 
@@ -51,7 +52,7 @@ namespace xppr::wpeng {
         Vector<Display> m_displays;
         bool m_quitted = false;
         void cycle();
-        
+      
     };
 
 }

@@ -2,7 +2,8 @@
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
+add_link_options(-rdynamic)
+set(CMAKE_ENABLE_EXPORTS true)
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
     add_compile_options( -O2 -fPIC -Weverything  
     -Wno-documentation    

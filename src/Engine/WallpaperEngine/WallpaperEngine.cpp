@@ -16,6 +16,8 @@ WallpaperEngine::WallpaperEngine(const Vector<XWindowHandler* >& windows) : m_di
 }
 
 void WallpaperEngine::run() {
+    loadPlugin("build/src/Plugins/API/libpaperpy.so");
+    // system("pwd");
     while(!m_quitted) {
         cycle();
     }
@@ -52,6 +54,12 @@ void WallpaperEngine::setBackgroundImages(const Vector<Image>& image, size_t win
 WallpaperEngine::~WallpaperEngine() {}
 
 WPError WallpaperEngine::loadPlugin(const char* filename) {
+    if(strcmp(filename, "bg") == 0) {
+        registerClass(m_displays[0].widgets[0]->getMeta());
+        return Ok;
+    }
+
+
     void* handle = dlopen(filename, RTLD_NOW | RTLD_LOCAL); //TODO: dlclose
     if(!handle) {
         xppr::log::error("loadPlugin \"{}\" failed with error: {}", filename, dlerror());
@@ -70,5 +78,18 @@ WPError WallpaperEngine::loadPlugin(const char* filename) {
     initer(ApplicationAPI(this));
     return WPError::Ok;
 }
+
+WPError WallpaperEngine::addConnector(ConnectorBase* connector) {
+    m_connectors.push_back(connector);
+    return Ok;
+}
+
+WPError WallpaperEngine::registerClass(xppr::meta::MetaClass* meta) {
+    for(ConnectorBase* cb : m_connectors) {
+        cb->registerClass(meta);
+    }
+    return Ok;
+}
+
 
 }

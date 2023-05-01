@@ -8,12 +8,6 @@
 namespace xppr {
 
     using namespace sf; //HACK //FIXME Temproary stub
-
-    class Renderer : public sf::RenderWindow {
-    public:
-        using WindowHandle = uint64_t;
-        
-    };
 }
 
 #endif /* ENGINE_RENDERENGINE_RENGINE_HPP */

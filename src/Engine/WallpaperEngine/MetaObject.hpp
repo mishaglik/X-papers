@@ -96,26 +96,29 @@ namespace meta {
         (std::is_pointer<T>::is_pointer && std::derived_from<typename std::remove_pointer<T>::type, MetaObject>);
 
     enum MetatypeFmt : char {
-        Int = 'd',
+        Int = 'L',
         Str = 's',
-        Buf = 'p',
-        Obj = 'o',
+        Buf = 'z',
+        Obj = 'O',
     };
 
 
     struct ArgPack {
-        std::string m_signature;
+        const char* m_signature;
+        struct MetaClass* self;
         void* m_data[];
     };
 
+    struct MetaClass;
+
     struct MetaFunction {
-        std::string m_name;
-        std::string m_signature;
-        int (*m_callback)(ArgPack* ap);
+        const char* m_name;
+        const char* m_signature;
+        MetaClass* (*m_callback)(ArgPack* ap);
     };
 
     struct MetaMember {
-        std::string m_name;
+        const char* m_name;
         char type;
         void* data;
     };
@@ -133,10 +136,10 @@ namespace meta {
         return ArgPackCallImpl(f, ap);
     }
 
-    struct MetaClass : MetaObject {
-        std::string m_name;
-        std::vector<MetaFunction> m_methods;
-        std::vector<MetaMember  > m_members;
+    struct MetaClass {
+        const char* m_name;
+        MetaFunction* m_methods; // NULL terminated
+        MetaMember*   m_members; // NULL terminated
     };
 
 };
