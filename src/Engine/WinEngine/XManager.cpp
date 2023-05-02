@@ -47,7 +47,10 @@ int XWindowManager::changeWindowProperty(XWindowHandler& handler,
 std::shared_ptr<XWindowManager> XWindowManager::getInstance() {
     // nullptr as default, values should be hardcoded, we don't need anything
     // else other than nullptr there
-    [[clang::no_destroy]] static std::shared_ptr<XWindowManager> instance{
+    #ifdef __clang__
+    [[clang::no_destroy]] 
+    #endif
+    static std::shared_ptr<XWindowManager> instance{
         new XWindowManager(nullptr)};
 
     return instance;

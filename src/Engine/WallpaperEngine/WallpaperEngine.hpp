@@ -30,7 +30,7 @@ namespace xppr::wpeng {
         
 
         WPError loadPlugin(const char* filename);
-        WPError addWidget(WidgetBase* widget);
+        WPError addWidget(WidgetBase* widget, uint64_t display);
         WPError addConnector(ConnectorBase* connector);
         WPError registerClass(xppr::meta::MetaClass* meta);
 

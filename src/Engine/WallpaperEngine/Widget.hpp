@@ -8,7 +8,7 @@
 
 namespace xppr {
 // class RenderWindow;
-class WidgetBase 
+class WidgetBase : public meta::MetaClass
 {
 public:
     virtual ~WidgetBase() {}
@@ -25,7 +25,6 @@ public:
     size_t m_display_idx = 0;
 
     virtual const char* getName() const = 0;
-    virtual meta::MetaClass* getMeta() = 0;
 };
 }
 

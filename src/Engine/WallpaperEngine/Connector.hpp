@@ -28,7 +28,7 @@ namespace xppr {
     class ApplicationAPI {
     public:
         ApplicationAPI(wpeng::WallpaperEngine* engine) : m_wallpaper(engine) {}
-        APIError addWidget(WidgetBase* widget);
+        APIError addWidget(WidgetBase* widget, uint64_t display);
         APIError addConnector(ConnectorBase* connector);
         APIError loadPlugin(const char* path);
     private:

@@ -1,6 +1,7 @@
 #include "WallpaperEngine.hpp"
 #include "WallpaperEngine/Background.hpp"
 #include "WallpaperEngine/Connector.hpp"
+#include "MetaDefaults.hpp"
 #include <time.h>
 #include <cstddef>
 #include <dlfcn.h>
@@ -16,8 +17,6 @@ WallpaperEngine::WallpaperEngine(const Vector<XWindowHandler* >& windows) : m_di
 }
 
 void WallpaperEngine::run() {
-    loadPlugin("build/src/Plugins/API/libpaperpy.so");
-    // system("pwd");
     while(!m_quitted) {
         cycle();
     }
@@ -55,7 +54,10 @@ WallpaperEngine::~WallpaperEngine() {}
 
 WPError WallpaperEngine::loadPlugin(const char* filename) {
     if(strcmp(filename, "bg") == 0) {
-        registerClass(m_displays[0].widgets[0]->getMeta());
+        // registerClass(m_displays[0].widgets[0]->getMeta());
+        static constexpr const char name[] = "bg";
+        meta::PMetaClass<Background, name>.m_api = ApplicationAPI(this);
+        registerClass(&meta::PMetaClass<Background, name>);
         return Ok;
     }
 
@@ -88,6 +90,14 @@ WPError WallpaperEngine::registerClass(xppr::meta::MetaClass* meta) {
     for(ConnectorBase* cb : m_connectors) {
         cb->registerClass(meta);
     }
+    return Ok;
+}
+
+WPError WallpaperEngine::addWidget(WidgetBase* widget, uint64_t display) {
+    if(display > m_displays.size()) {
+        return WPError::Invalid;
+    }
+    m_displays[display].widgets.push_back(widget);
     return Ok;
 }
 

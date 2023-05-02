@@ -11,12 +11,12 @@ namespace xppr::wpeng {
 class Background : public WidgetBase {
 public:
     explicit Background(Vector2u winsize);
+    explicit Background();
 
     const char* getName() const override {return "background";}
     void update(uint64_t curtime) override;
     void draw(RenderWindow& window) const override;
     bool handleEvent(EventBase&) override {return false;}
-    virtual meta::MetaClass* getMeta() override {return &m_meta;}
 
     void setImageList(const Vector<Image>& images);
     struct BgMeta : meta::MetaClass {
@@ -26,9 +26,7 @@ public:
 private:
     Vector<Texture> m_images;
     uint64_t m_update_speed = 1'000;
-    Sprite m_sprite;
-    BgMeta m_meta;
-    
+    Sprite m_sprite;    
 };
 
 }

@@ -4,6 +4,9 @@
 #include <cstdint>
 #include <string>
 #include <vector>
+#include "MetaClass.hpp"
+
+
 namespace xppr {
 
 struct guid_t {
@@ -88,61 +91,6 @@ public:
     const T& operator[](Property<T> prop) const { return this->*prop; }
 };
 
-
-namespace meta {
-
-    template<class T>
-    concept Metatype = std::same_as<T, uint64_t> || std::same_as<T, void* > || std::same_as<T, char*> || 
-        (std::is_pointer<T>::is_pointer && std::derived_from<typename std::remove_pointer<T>::type, MetaObject>);
-
-    enum MetatypeFmt : char {
-        Int = 'L',
-        Str = 's',
-        Buf = 'z',
-        Obj = 'O',
-    };
-
-
-    struct ArgPack {
-        const char* m_signature;
-        struct MetaClass* self;
-        void* m_data[];
-    };
-
-    struct MetaClass;
-
-    struct MetaFunction {
-        const char* m_name;
-        const char* m_signature;
-        MetaClass* (*m_callback)(ArgPack* ap);
-    };
-
-    struct MetaMember {
-        const char* m_name;
-        char type;
-        void* data;
-    };
-
-    template<class T>
-    int ArgPackCall(T t, ArgPack* ap);
-
-    template<Metatype... Args, size_t... Idx>
-    int ArgPackCallImpl(int(*f)(Args...), ArgPack* ap, std::index_sequence<Idx...> = std::index_sequence_for<Args...>{}) {
-        return f(reinterpret_cast<Args>(ap->m_data[Idx])...);
-    }
-
-    template<Metatype... Args>
-    int ArgPackCall(int(*f)(Args...), ArgPack* ap) {
-        return ArgPackCallImpl(f, ap);
-    }
-
-    struct MetaClass {
-        const char* m_name;
-        MetaFunction* m_methods; // NULL terminated
-        MetaMember*   m_members; // NULL terminated
-    };
-
-};
 
 namespace rebind {
 

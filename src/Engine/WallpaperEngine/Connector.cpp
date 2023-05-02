@@ -3,8 +3,8 @@
 #include <Utilities/utils.hpp>
 namespace xppr {
 
-APIError ApplicationAPI::addWidget(WidgetBase*) {
-    NOT_IMPLEMENTED;
+APIError ApplicationAPI::addWidget(WidgetBase* widget, uint64_t display) {
+    return APIError{m_wallpaper->addWidget(widget, display)};
 }
 
 APIError ApplicationAPI::addConnector(ConnectorBase* cb) {

@@ -10,12 +10,9 @@ int main() {
     xppr::log::init_logger();
     
     auto* win = test_open_window();
-
-    // xppr::Vector<xppr::Image> bg(2);
-    // bg[0].loadFromFile("/home/gms/I1.jpg");
-    // bg[1].loadFromFile("/home/gms/I2.jpg");
+    
     xppr::wpeng::WallpaperEngine app({win});
-    // app.setBackgroundImages(bg, 0);
+    app.loadPlugin("build/src/Plugins/API/Python/libpaperpy.so");
     app.run();   
 
     win->hide();
