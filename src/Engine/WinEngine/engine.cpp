@@ -2,8 +2,8 @@
 #include <X11/X.h>
 #include <X11/Xatom.h>
 #include <iostream>
+#include "WinEngine/XDisplayHandler.hpp"
 #include "WinEngine/proto.hpp"
-#include "XManager.hpp"
 #include <X11/extensions/Xrandr.h>
 winengine::XWindowHandler* test_open_window() {
 

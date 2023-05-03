@@ -1,11 +1,12 @@
 #include "WallpaperEngine/WallpaperEngine.hpp"
+#include "WinEngine/XDisplayHandler.hpp"
 #include <SFML/Window/VideoMode.hpp>
 #include <SFML/Window/Window.hpp>
 #include <cassert>
 #include <unistd.h>
 #include <Utilities/defines.hpp>
 #include <Engine/WinEngine/engine.hpp>
-#include <Engine/WinEngine/XManager.hpp>
+
 int main() {
     xppr::log::init_logger();
     
@@ -19,7 +20,7 @@ int main() {
     app.run();   
 
     win->hide();
-    auto manager = winengine::XWindowManager::getInstance();
+    auto manager = winengine::XDisplayHandler::getInstance();
     manager->closeDisplay();
 
 }
