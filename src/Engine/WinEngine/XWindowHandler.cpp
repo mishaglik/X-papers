@@ -3,11 +3,11 @@
 #include <X11/Xutil.h>
 #include <cstdio>
 #include "WinEngine/proto.hpp"
-#include "XManager.hpp"
+#include "XDisplayHandler.hpp"
 
 namespace winengine {
 
-XWindowHandler::XWindowHandler(XWindowManager* manager,
+XWindowHandler::XWindowHandler(XDisplayHandler* manager,
                                display_t* display,
                                pair_t coords,
                                pair_t size,
