@@ -18,7 +18,6 @@ make_component(windowEngine WindowEngine)
 target_include_directories(windowEngine PUBLIC ..)
 
 find_package(XCB REQUIRED)
-find_package(X11 REQUIRED)
 find_package(X11 REQUIRED COMPONENTS Xrandr)
 
 target_include_directories(windowEngine PUBLIC ${XCB_INCLUDE_DIR} ${X11_INCLUDE_DIR})
