@@ -6,6 +6,7 @@
 ////////////////////////////////////////////////////////////
 /* DON'T CHANGE THE ORDER, IT WILL BREAK */
 #include <X11/Xlib.h>
+#include "WinEngine/WindowEngine.hpp"
 #include "WinEngine/proto.hpp"
 #include "XWindowHandler.hpp"
 
@@ -13,12 +14,14 @@ namespace winengine {
 
 class XWindowHandler;
 
-class XWindowManager {
+class XDisplayHandler {
+    friend class WindowEngine;
+
    private:
-    XWindowManager(const char* display_name = nullptr);
+    XDisplayHandler(const char* display_name = nullptr);
 
    public:
-    static std::shared_ptr<XWindowManager> getInstance();
+    static std::shared_ptr<XDisplayHandler> getInstance();
 
     XWindowHandler* addWindow(pair_t coords,
                               pair_t size,
@@ -32,13 +35,9 @@ class XWindowManager {
 
     int flush();
 
-    int nextEvent(event_t* event) {
-        return XNextEvent(m_display, event);
-    } 
+    int nextEvent(event_t* event) { return XNextEvent(m_display, event); }
 
-    int closeDisplay() {
-        return XCloseDisplay(m_display);
-    }
+    int closeDisplay() { return XCloseDisplay(m_display); }
 
     int changeWindowProperty(XWindowHandler& handler,
                              atom_t property,
@@ -50,8 +49,8 @@ class XWindowManager {
 
     std::size_t getTotalWindows() const { return m_total_windows; }
 
-    XWindowManager(XWindowManager const&) = delete;
-    XWindowManager& operator=(XWindowManager const&) = delete;
+    XDisplayHandler(XDisplayHandler const&) = delete;
+    XDisplayHandler& operator=(XDisplayHandler const&) = delete;
 
     friend class XWindowHandler;
 
@@ -60,7 +59,6 @@ class XWindowManager {
 
     display_t* m_display = nullptr;
     screen_t m_screen = 0;
-    gc_t m_gc;
 };
 
 }  // namespace winengine

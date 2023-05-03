@@ -7,13 +7,13 @@
 #include "proto.hpp"
 namespace winengine {
 
-class XWindowManager;
+class XDisplayHandler;
 
 class XWindowHandler {
-    friend class XWindowManager;
+    friend class XDisplayHandler;
 
    private:
-    XWindowHandler(XWindowManager* manager,
+    XWindowHandler(XDisplayHandler* manager,
                    display_t* display,
                    pair_t coords,
                    pair_t size,
@@ -22,6 +22,9 @@ class XWindowHandler {
                    visual_t* visual = nullptr,
                    uint32_t mask = 0,
                    win_attr_t* attributes = nullptr);
+
+    XWindowHandler& operator=(const XWindowHandler&) = delete;
+    XWindowHandler& operator=(XWindowHandler&&) = delete;
 
     ~XWindowHandler() = default;
 
@@ -45,9 +48,11 @@ class XWindowHandler {
 
     int setHints(wm_hints_t* hints);
 
+    const win_t& getInternalHandler() const { return m_win_id; }
+
    private:
     win_t m_win_id = 0;
-    XWindowManager* m_manager = nullptr;
+    XDisplayHandler* m_manager = nullptr;
 };
 
 }  // namespace winengine

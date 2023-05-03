@@ -10,6 +10,7 @@
 #include <X11/X.h>
 #include <X11/Xatom.h>
 #include <X11/Xutil.h>
+#include <X11/extensions/Xrandr.h>
 #include <Utilities/optional.hpp>
 #include <cstring>
 #include <memory>
@@ -18,6 +19,7 @@
 
 namespace winengine {
 
+// X11 types
 using display_t = Display;
 using screen_t = int;
 using win_attr_t = XSetWindowAttributes;
@@ -26,9 +28,11 @@ using atom_t = Atom;
 using wm_hints_t = XWMHints;
 using event_t = XEvent;
 using visual_t = Visual;
-
 using gc_t = GC;
+
+// pair storage types
 using xppr::pair_t;
+using xppr::upair_t;
 
 typedef enum class_t{
     Parent = CopyFromParent,

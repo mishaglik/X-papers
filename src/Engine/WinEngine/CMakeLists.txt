@@ -1,9 +1,15 @@
 set(WINDOW_ENGINE_HEADERS
+    WindowEngine.hpp
+    XDisplayHandler.hpp
+    XWindowHandler.hpp
+    proto.hpp
+    engine.hpp
 )
 
 set(WINDOW_ENGINE_SOURCES
     engine.cpp
-    XManager.cpp
+    WindowEngine.cpp
+    XDisplayHandler.cpp
     XWindowHandler.cpp
 )
 
@@ -12,10 +18,10 @@ make_component(windowEngine WindowEngine)
 target_include_directories(windowEngine PUBLIC ..)
 
 find_package(XCB REQUIRED)
-find_package(X11 REQUIRED)
+find_package(X11 REQUIRED COMPONENTS Xrandr)
 
 target_include_directories(windowEngine PUBLIC ${XCB_INCLUDE_DIR} ${X11_INCLUDE_DIR})
-target_link_libraries(windowEngine PUBLIC ${XCB_LIBRARIES} ${X11_LIBRARIES})
+target_link_libraries(windowEngine PUBLIC ${XCB_LIBRARIES} ${X11_LIBRARIES} X11::Xrandr)
 
 target_link_libraries(windowEngine PRIVATE utilities)
 
