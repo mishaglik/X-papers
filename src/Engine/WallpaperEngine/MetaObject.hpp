@@ -91,7 +91,6 @@ public:
     const T& operator[](Property<T> prop) const { return this->*prop; }
 };
 
-
 namespace rebind {
 
     template<class T>

@@ -1,9 +1,15 @@
 set(WINDOW_ENGINE_HEADERS
+    WindowEngine.hpp
+    XDisplayHandler.hpp
+    XWindowHandler.hpp
+    proto.hpp
+    engine.hpp
 )
 
 set(WINDOW_ENGINE_SOURCES
     engine.cpp
-    XManager.cpp
+    WindowEngine.cpp
+    XDisplayHandler.cpp
     XWindowHandler.cpp
 )
 
