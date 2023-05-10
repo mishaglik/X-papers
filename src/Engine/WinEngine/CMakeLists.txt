@@ -16,6 +16,9 @@ set(WINDOW_ENGINE_SOURCES
 add_library(windowEngine ${WINDOW_ENGINE_HEADERS} ${WINDOW_ENGINE_SOURCES})
 make_component(windowEngine WindowEngine)
 target_include_directories(windowEngine PUBLIC ..)
+target_link_libraries(windowEngine PUBLIC sfml-graphics sfml-window sfml-system)
+link_directories(/usr/local/lib/)
+target_link_libraries(windowEngine PUBLIC sfeMovie)
 
 find_package(XCB REQUIRED)
 find_package(X11 REQUIRED)
