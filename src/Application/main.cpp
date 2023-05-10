@@ -5,6 +5,6 @@
 
 int main() {
     xppr::log::init_logger();
-    
-    test_open_window();
+
+    test_render_wallpaper("/home/execorn/Downloads/wallpaper.mp4");
 }
