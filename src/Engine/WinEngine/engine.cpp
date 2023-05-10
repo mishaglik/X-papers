@@ -103,6 +103,8 @@ void test_render_wallpaper(const char* path = nullptr) {
         window.draw(video_render_obj);
         window.display();
     }
+
+    manager->closeDisplay();
 }   
 
 void test_open_window() {
