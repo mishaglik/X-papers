@@ -40,7 +40,29 @@ void test_render_wallpaper(const char* path = nullptr) {
 
     sf::RenderWindow window(sf::VideoMode(1920, 1080), "X-papers", 0);
     window.setPosition({0, 0});
+    //
+    winengine::win_attr_t attrib;
+    attrib.override_redirect = True;
 
+    auto manager = winengine::XDisplayHandler::getInstance();
+    auto win = manager->addWindow(window.getSystemHandle());
+
+    auto wintype = manager->createAtom("_NET_WM_WINDOW_TYPE", False);
+    auto desktop = manager->createAtom("_NET_WM_WINDOW_TYPE_DESKTOP", False);
+
+    win->changeProperty(wintype, XA_ATOM, 32, PropModeReplace,
+                        (unsigned char*)&desktop, 1);
+
+    unsigned int ints[2];
+    ints[0] = 0xFFFFFFFF;
+    ints[1] = 2;
+
+    auto wm_desktop = manager->createAtom("_NET_WM_DESKTOP", True);
+
+    win->changeProperty(wm_desktop, XA_ATOM, 32, PropModeReplace,
+                        (unsigned char*)ints, 2);
+
+    //
     window.setFramerateLimit(60);
     window.setVerticalSyncEnabled(true);
 

@@ -1,6 +1,7 @@
 #include "XDisplayHandler.hpp"
 #include <X11/Xlib.h>
 #include "WinEngine/XWindowHandler.hpp"
+#include "WinEngine/proto.hpp"
 
 namespace winengine {
 
@@ -20,6 +21,14 @@ XWindowHandler* XDisplayHandler::addWindow(pair_t coords,
         new XWindowHandler(this, m_display, coords, size, border_width,
                            class_type, visual, mask, attributes);
 
+    ++m_total_windows;
+
+    return new_handler;
+}
+
+XWindowHandler* XDisplayHandler::addWindow(win_t id) {
+    XWindowHandler* new_handler =
+        new XWindowHandler(this, id);
     ++m_total_windows;
 
     return new_handler;

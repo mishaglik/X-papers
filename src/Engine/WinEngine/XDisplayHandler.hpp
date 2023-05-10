@@ -31,6 +31,8 @@ class XDisplayHandler {
                               uint32_t mask = 0,
                               win_attr_t* attributes = nullptr);
 
+    XWindowHandler* addWindow(const win_t id);
+
     atom_t createAtom(const char* atom_name, int only_if_exists);
 
     int flush();
