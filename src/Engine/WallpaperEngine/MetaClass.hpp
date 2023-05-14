@@ -25,6 +25,8 @@ struct MetaFunction {
     MetaClass* (*m_callback)(ArgPack* ap);
 };
 
+typedef MetaClass* (*MetaCallback)(ArgPack* ap);
+
 struct MetaMember {
     const char* m_name;
     char type;

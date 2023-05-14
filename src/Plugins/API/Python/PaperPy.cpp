@@ -1,7 +1,6 @@
 #include "PaperPy.hpp"
 #include "PyCInterface.h"
 
-
 static xppr::ApplicationAPI AppAPI(nullptr);
 
 static xppr::meta::MetaClass* hello(xppr::meta::ArgPack* ap) {

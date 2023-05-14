@@ -15,10 +15,13 @@ int main() {
     xppr::wpeng::WallpaperEngine app({win});
     app.loadPlugin("build/src/Plugins/API/Python/libpaperpy.so");
     app.run();   
-
+    auto manager = winengine::XDisplayHandler::getInstance();
+    // while(1) {
+    //     winengine::event_t ev;
+    //     manager->nextEvent(&ev);
+    // }
     win->hide();
     
-    auto manager = winengine::XDisplayHandler::getInstance();
     manager->closeDisplay();
 
 }

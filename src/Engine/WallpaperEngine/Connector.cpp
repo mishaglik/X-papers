@@ -15,4 +15,8 @@ APIError ApplicationAPI::loadPlugin(const char* filename) {
     return APIError{m_wallpaper->loadPlugin(filename)};
 }
 
+APIError ApplicationAPI::registerClass(xppr::meta::MetaClass* meta) {
+    return APIError{m_wallpaper->registerClass(meta)};
+}
+
 }

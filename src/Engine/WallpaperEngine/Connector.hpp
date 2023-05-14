@@ -31,13 +31,14 @@ namespace xppr {
         APIError addWidget(WidgetBase* widget, uint64_t display);
         APIError addConnector(ConnectorBase* connector);
         APIError loadPlugin(const char* path);
+        APIError registerClass(xppr::meta::MetaClass* meta);
     private:
         friend class wpeng::WallpaperEngine;
         wpeng::WallpaperEngine* m_wallpaper;
     };
 
     /* Connector plugins must implement next methods 
-        extern ConnectorBase* init_plugin(ApplicationAPI api);
+        extern void init_plugin(ApplicationAPI api);
     */
 
     class ConnectorBase {
