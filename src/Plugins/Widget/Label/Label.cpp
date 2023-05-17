@@ -60,10 +60,13 @@ struct LabelMgr : xppr::meta::MetaObjectT<&LabelMgrType> {
 };
 
 xppr::meta::MetaObject* LabelMgr::add(uint64_t i) {
-        auto* bg = new Label();
-        m_api.addWidget(bg, i);
-        return bg;
+    if(i >= m_api.NDisplays()) {
+        return new xppr::meta::MetaError{{}, xppr::meta::MetaError::Type::AttributeError, "index of display is too big!"};
     }
+    auto* bg = new Label();
+    m_api.addWidget(bg, i);
+    return bg;
+}
 
 
 const xppr::meta::MetaFuction LabelMgrMeths[] {

@@ -28,8 +28,6 @@ xppr::meta::MetaType MainObjectType {
     nullptr
 };
 
-
-
 extern "C" void init_plugin(xppr::ApplicationAPI api) {
     xppr::log::add_logger();
     PyCharmer::Current = new PyCharmer;
@@ -38,7 +36,6 @@ extern "C" void init_plugin(xppr::ApplicationAPI api) {
     api.addConnector(Connector);
     Connector->m_charmer->registerType(&MainObjectType);
     Connector->m_charmer->startScript("install/paperconfig.py");
-    // init_python_module(&mainObject, "install/paperconfig.py");
 }
 
 void PyConnector::registerObject(xppr::meta::MetaObject* meta) {
@@ -47,10 +44,6 @@ void PyConnector::registerObject(xppr::meta::MetaObject* meta) {
 
 
 void PyConnector::registerClass(xppr::meta::MetaType* meta) {
-    // reg_class(meta);
+    m_charmer->registerType(meta);
 }
 
-// xppr::meta::MetaType* load_module(xppr::meta::ArgPack* ap) {
-//     AppAPI.loadPlugin(reinterpret_cast<char* >(ap->m_data[0]));
-//     return nullptr;
-// }

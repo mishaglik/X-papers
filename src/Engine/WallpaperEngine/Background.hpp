@@ -28,10 +28,7 @@ public:
 
     void setImageList(const Vector<Image>& images);
     void addImage(const char* filename);
-    // struct BgMeta : meta::MetaType {
-    //     explicit BgMeta(Background* bg);
-    //     Background* m_bg;
-    // };
+  
 private:
     Vector<Texture> m_images;
     uint64_t m_update_speed = 1'000;

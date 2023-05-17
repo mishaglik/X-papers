@@ -33,6 +33,7 @@ namespace xppr {
         APIError loadPlugin(const char* path);
         APIError registerClass(xppr::meta::MetaType* meta);
         APIError registerObject(xppr::meta::MetaObject* meta);
+        size_t NDisplays();
     private:
         friend class wpeng::WallpaperEngine;
         wpeng::WallpaperEngine* m_wallpaper;

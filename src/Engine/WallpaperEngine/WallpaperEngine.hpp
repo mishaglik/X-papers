@@ -34,7 +34,7 @@ namespace xppr::wpeng {
         WPError addConnector(ConnectorBase* connector);
         WPError registerClass(xppr::meta::MetaType* meta);
         WPError registerObject(xppr::meta::MetaObject* meta);
-
+        size_t NDisplays() const {return m_displays.size();}
       private:
 
       struct Display {

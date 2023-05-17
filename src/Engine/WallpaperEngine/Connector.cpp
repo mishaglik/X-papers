@@ -23,6 +23,11 @@ APIError ApplicationAPI::registerObject(xppr::meta::MetaObject* meta) {
     return APIError{m_wallpaper->registerObject(meta)};
 }
 
+size_t ApplicationAPI::NDisplays() {
+    return m_wallpaper->NDisplays();
+}
+
+
 ConnectorBase::~ConnectorBase() {}
 
 

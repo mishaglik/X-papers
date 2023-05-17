@@ -62,7 +62,10 @@ struct ArgPack {
     void* m_data[];
 };
 
+extern const MetaType ErrorType;
+
 #ifdef __cplusplus
+
 
 template<const MetaType* type>
 struct MetaObjectT : MetaObject {
@@ -70,7 +73,17 @@ struct MetaObjectT : MetaObject {
     MetaObjectT() : MetaObject{.m_type = type} {}
 };
 
+struct MetaError : public MetaObjectT<&ErrorType> {
+    enum class Type {
+        TypeError,
+        AttributeError,
+        OtherError
+    };
+    Type m_err_type;
+    const char* m_message;
+};
 }
+
 #endif
 
 #endif /* ENGINE_WALLPAPERENGINE_METATYPES_HPP */

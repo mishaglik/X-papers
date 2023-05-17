@@ -94,21 +94,21 @@ void PyCharmer::registerType(const xppr::meta::MetaType* type) {
     assert(DefaultMetaType.tp_dict == nullptr);
     PyTypeObject* type_object = new PyTypeObject(DefaultMetaType); //TODO: Null check
 
-    // size_t n_members = CArrSize(type->members);
-    // if(n_members != 0) {
-    //     PyGetSetDef* members = new PyGetSetDef[n_members]; //TODO: Null check
-    //     for(size_t i = 0; i < n_members-1; ++i) {
-    //         members[i] = {
-    //             .name = type->members[i].name,
-    //             .get = MetaGetter,
-    //             .set = type->members[i].writable ? MetaSetter : nullptr,
-    //             .doc = "Doc",
-    //             .closure = const_cast<void*>(reinterpret_cast<const void*>(&type->members[i])),
-    //         };
-    //     }
-    //     members[n_members-1] = {nullptr, nullptr, nullptr, nullptr, nullptr};
-    //     type_object->tp_getset = members;
-    // }
+    size_t n_members = CArrSize(type->members);
+    if(n_members != 0) {
+        PyGetSetDef* members = new PyGetSetDef[n_members]; //TODO: Null check
+        for(size_t i = 0; i < n_members-1; ++i) {
+            members[i] = {
+                .name = type->members[i].name,
+                .get = MetaGetter,
+                .set = type->members[i].writable ? MetaSetter : nullptr,
+                .doc = "Doc",
+                .closure = const_cast<void*>(reinterpret_cast<const void*>(&type->members[i])),
+            };
+        }
+        members[n_members-1] = {nullptr, nullptr, nullptr, nullptr, nullptr};
+        type_object->tp_getset = members;
+    }
 
     size_t n_methods = CArrSize(type->methods);
     if(n_methods != 0) {
@@ -195,6 +195,27 @@ static PyObject* MetaGetter(PyObject* self, void* closure) {
 PyObject* PyCharmer::buildPyObject(xppr::meta::MetaObject* object) {
     if(object == nullptr) {
         Py_RETURN_NAN;
+    }
+
+    if(object->m_type == &xppr::meta::ErrorType) {
+        MetaError* error = static_cast<MetaError*>(object);
+        switch (error->m_err_type) {
+            case MetaError::Type::TypeError:
+                PyErr_SetString(PyExc_SystemError, error->m_message);
+                return nullptr;
+
+            case MetaError::Type::AttributeError:
+                PyErr_SetString(PyExc_AttributeError, error->m_message);
+                return nullptr;
+            
+            case MetaError::Type::OtherError:
+                PyErr_SetString(PyExc_TypeError, error->m_message);
+                return nullptr;
+            
+            default:
+                PyErr_SetString(PyExc_SystemError, "Bad error :(");
+                return nullptr;
+        }
     }
 
     PyTypeObject* py_type = getPyType(object->m_type);

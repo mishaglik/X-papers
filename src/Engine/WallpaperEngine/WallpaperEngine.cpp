@@ -1,7 +1,7 @@
 #include "WallpaperEngine.hpp"
 #include "WallpaperEngine/Background.hpp"
 #include "WallpaperEngine/Connector.hpp"
-#include "MetaDefaults.hpp"
+#include "MetaUtils.hpp"
 #include <time.h>
 #include <cstddef>
 #include <dlfcn.h>
@@ -110,5 +110,13 @@ WPError WallpaperEngine::addWidget(WidgetBase* widget, uint64_t display) {
     return Ok;
 }
 
+}
 
+namespace xppr::meta {
+const MetaType ErrorType = {
+    "error",
+    nullptr,
+    nullptr,
+    nullptr
+};
 }

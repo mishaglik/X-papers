@@ -18,29 +18,6 @@ namespace xppr::wpeng {
         nullptr
     };
 
-    //  static meta::MetaO* setImage(meta::ArgPack* ap) {
-    //     Image img;
-    //     if(!img.loadFromFile(reinterpret_cast<char*>(ap->m_data[0]))) {
-    //         log::critical("Img not loaded");
-    //         return nullptr;
-    //     }
-        
-    //     assert(ap->self);
-    //     static_cast<Background* >(ap->self)->setImageList({img});
-    //     return nullptr;
-    // }
-
-    // static meta::MetaFunction BgMeths[] = {
-    //     {"setImage", "s", setImage},
-    //     {NULL}
-    // };
-
-    // Background::Background() {
-    //     m_name = "bg";
-    //     m_methods = BgMeths;
-    //     m_members = nullptr;
-    // }
-
     Background::Background(Vector2u /* winsize */) : Background() {
        
     }
