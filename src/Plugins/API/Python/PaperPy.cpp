@@ -1,39 +1,56 @@
 #include "PaperPy.hpp"
+#include "PPython.hpp"
 #include "PyCInterface.h"
+#include <Utilities/utils.hpp>
 
-static xppr::ApplicationAPI AppAPI(nullptr);
+PyConnector* Connector = nullptr; 
 
-static xppr::meta::MetaClass* hello(xppr::meta::ArgPack* ap) {
+static xppr::meta::MetaObject* hello(xppr::meta::ArgPack* ap) {
     printf("Hello %p\n", ap->m_data[0]);
     return nullptr;
 }
 
-static xppr::meta::MetaFunction mainMethods[] {
+static xppr::meta::MetaObject* loadModule(xppr::meta::ArgPack* ap) {
+    Connector->m_app.loadPlugin(reinterpret_cast<char* >(ap->m_data[0]));
+    return nullptr;
+}
+
+static xppr::meta::MetaFuction mainMethods[] {
     {"print", "L", hello},
-    {"loadModule", "s", load_module},
-    {NULL, NULL, NULL}
+    {"loadModule", "s", loadModule},
+    {nullptr, nullptr, nullptr}
 };
 
 
-static xppr::meta::MetaClass mainObject {
+xppr::meta::MetaType MainObjectType {
     "main",
     mainMethods,
     nullptr
 };
 
 
+
 extern "C" void init_plugin(xppr::ApplicationAPI api) {
-    AppAPI = api;
-    api.addConnector(new PyConnector);
-    init_python_module(&mainObject, "install/paperconfig.py");
+    xppr::log::add_logger();
+    PyCharmer::Current = new PyCharmer;
+    PyCharmer::Current->init();
+    Connector = new PyConnector(api, PyCharmer::Current);
+    api.addConnector(Connector);
+    Connector->m_charmer->registerType(&MainObjectType);
+    Connector->m_charmer->startScript("install/paperconfig.py");
+    // init_python_module(&mainObject, "install/paperconfig.py");
+}
+
+void PyConnector::registerObject(xppr::meta::MetaObject* meta) {
+    m_charmer->addModuleMember(meta);
 }
 
 
-void PyConnector::registerClass(xppr::meta::MetaClass* meta) {
-    reg_class(meta);
+void PyConnector::registerClass(xppr::meta::MetaType* meta) {
+    // reg_class(meta);
 }
 
-xppr::meta::MetaClass* load_module(xppr::meta::ArgPack* ap) {
-    AppAPI.loadPlugin(reinterpret_cast<char* >(ap->m_data[0]));
-    return nullptr;
-}
+// xppr::meta::MetaType* load_module(xppr::meta::ArgPack* ap) {
+//     AppAPI.loadPlugin(reinterpret_cast<char* >(ap->m_data[0]));
+//     return nullptr;
+// }

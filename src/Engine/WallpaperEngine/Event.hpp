@@ -3,13 +3,13 @@
 
 #include <concepts>
 #include <cstdint>
-#include "MetaObject.hpp"
+#include <Engine/WallpaperEngine/MetaTypes.hpp>
 namespace xppr {
 
     
-    class EventBase : public MetaObject {
+    class EventBase : public meta::MetaObject {
       public:
-      EventBase(guid_t guid) : MetaObject(guid) {}
+      EventBase() : MetaObject() {}
     };
 
 }

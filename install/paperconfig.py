@@ -4,10 +4,9 @@ xpap = xpapers.connect()
 
 xpap.loadModule("bg")
 bg = xpap.bg.add(0)
-bg.setImage("/home/gms/I2.jpg")
+bg.addImage("/home/gms/I2.jpg")
 
 import os
-print(os.getcwd())
 xpap.loadModule("build/src/Plugins/Widget/Label/liblabel.so")
 label = xpap.label.add(0)
 label.setText("Hello, text!")

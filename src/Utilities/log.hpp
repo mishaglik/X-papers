@@ -7,7 +7,7 @@
  *
  */
 #ifndef XPPR_COMPONENT
-#warn "XPPR_COMPONENT not set"
+#warning "XPPR_COMPONENT not set"
 #define XPPR_COMPONENT "unknown"
 #endif
 
@@ -32,41 +32,43 @@ using namespace spdlog::level;
 }
 using spdlog::format_string_t;
 using spdlog::source_loc;
+std::shared_ptr<spdlog::logger> get_logger(const char* component = CUR_COMPONENT) noexcept;
 
 template <typename... Args>
 static inline void log(level::level_enum lvl,
                        format_string_t<Args...> fmt,
                        Args&&... args) {
-    spdlog::get(CUR_COMPONENT)
+    get_logger()
         ->log(source_loc{}, lvl, fmt, std::forward<Args>(args)...);
 }
 
 template <typename... Args>
 static inline void debug(format_string_t<Args...> fmt, Args&&... args) {
-    spdlog::get(CUR_COMPONENT)->debug(fmt, std::forward<Args>(args)...);
+    get_logger()->debug(fmt, std::forward<Args>(args)...);
 }
 
 template <typename... Args>
 static inline void info(format_string_t<Args...> fmt, Args&&... args) {
-    spdlog::get(CUR_COMPONENT)->info(fmt, std::forward<Args>(args)...);
+    get_logger()->info(fmt, std::forward<Args>(args)...);
 }
 
 template <typename... Args>
 static inline void warn(format_string_t<Args...> fmt, Args&&... args) {
-    spdlog::get(CUR_COMPONENT)->warn(fmt, std::forward<Args>(args)...);
+    get_logger()->warn(fmt, std::forward<Args>(args)...);
 }
 
 template <typename... Args>
 static inline void error(format_string_t<Args...> fmt, Args&&... args) {
-    spdlog::get(CUR_COMPONENT)->error(fmt, std::forward<Args>(args)...);
+    get_logger()->error(fmt, std::forward<Args>(args)...);
 }
 
 template <typename... Args>
 static inline void critical(format_string_t<Args...> fmt, Args&&... args) {
-    spdlog::get(CUR_COMPONENT)->critical(fmt, std::forward<Args>(args)...);
+    get_logger()->critical(fmt, std::forward<Args>(args)...);
 }
 
 void init_logger(const char* components[] = COMPONENTS) noexcept;
+void add_logger(const char* component = CUR_COMPONENT) noexcept;
 }  // namespace xppr::log
 
 #endif /* UTILITIES_LOG_HPP */

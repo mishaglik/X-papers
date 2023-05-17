@@ -1,3 +1,4 @@
+#if 0
 #ifndef ENGINE_WALLPAPERENGINE_METADEFAULTS_HPP
 #define ENGINE_WALLPAPERENGINE_METADEFAULTS_HPP
 
@@ -33,7 +34,7 @@ namespace xppr::meta {
     using Property = U T::*;
 
     template<class T>
-    concept Parameter = std::same_as<T, MetaClass*> || std::same_as<T, const char*> || std::same_as<T, void*> || std::same_as<T, uint64_t>;
+    concept Parameter = std::same_as<T, MetaClass* > || std::same_as<T, const char* > || std::same_as<T, void* > || std::same_as<T, uint64_t>;
 
     template<class T, Parameter ...Args, void (T::*Meth)(Args...), std::size_t... Idx>
     void call_impl(ArgPack* ap, std::index_sequence<Idx...>) {
@@ -94,3 +95,4 @@ namespace xppr::meta {
 
 
 #endif /* ENGINE_WALLPAPERENGINE_METADEFAULTS_HPP */
+#endif

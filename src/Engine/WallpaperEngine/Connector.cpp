@@ -15,8 +15,15 @@ APIError ApplicationAPI::loadPlugin(const char* filename) {
     return APIError{m_wallpaper->loadPlugin(filename)};
 }
 
-APIError ApplicationAPI::registerClass(xppr::meta::MetaClass* meta) {
+APIError ApplicationAPI::registerClass(xppr::meta::MetaType* meta) {
     return APIError{m_wallpaper->registerClass(meta)};
 }
+
+APIError ApplicationAPI::registerObject(xppr::meta::MetaObject* meta) {
+    return APIError{m_wallpaper->registerObject(meta)};
+}
+
+ConnectorBase::~ConnectorBase() {}
+
 
 }

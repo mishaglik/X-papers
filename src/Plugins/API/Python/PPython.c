@@ -1,10 +1,11 @@
 #include <Python.h>
 #include "stddef.h"
+#include "stdarg.h"
 #include "PyCInterface.h"
 
 struct py_meta_class {
     PyObject_HEAD
-    struct MetaClass* mt;
+    struct MetaObject* mt;
     PyObject* dict;
 };
 
@@ -12,14 +13,16 @@ struct py_meta_method {
     PyObject_HEAD
     PyObject* name;
     struct MetaFunction* mf;
-    struct MetaClass* mt;
+    struct MetaObject* mt;
 };
 
-static PyObject* build_py_class(struct MetaClass* meta_class);
+PyTypeObject* meta_to_py_type(MetaType* type);
+
+static PyObject* build_py_class(struct MetaObject* meta_class);
 static PyObject* func_connect(PyObject *self, PyObject *args);
 static PyObject* py_meta_method_call(PyObject *self, PyObject *args, PyObject *kwargs);
 
-static MetaClass* xmain = NULL;
+static MetaObject* xmain = NULL;
 static PyObject* main_obj = NULL;
 
 static PyMethodDef xpapers_methods[] = {
@@ -172,14 +175,13 @@ build_py_meth(struct MetaFunction* meta_method, struct MetaClass* meta_class) {
 static PyObject* 
 build_py_memb(const struct MetaMember* meta_member) {
     switch (meta_member->type) {
-        case 'L':
+        case Long:
             return Py_BuildValue("L", meta_member->data);
-        case 's':
+        case String:
             return Py_BuildValue("s", meta_member->data);
-        case 'z':
-            return Py_BuildValue("z", meta_member->data);
-        case 'O':
+        case Object:
             return Py_BuildValue("O", build_py_class(meta_member->data));
+        case Void:
         default: 
             return NULL;
     }
@@ -261,3 +263,4 @@ func_connect(PyObject*, PyObject*) {
     // fprintf(stderr, "class builded\n");
     return Py_BuildValue("O", obj);
 }
+

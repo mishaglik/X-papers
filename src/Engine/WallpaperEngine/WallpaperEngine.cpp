@@ -55,9 +55,10 @@ WallpaperEngine::~WallpaperEngine() {}
 WPError WallpaperEngine::loadPlugin(const char* filename) {
     if(strcmp(filename, "bg") == 0) {
         // registerClass(m_displays[0].widgets[0]->getMeta());
-        static constexpr const char name[] = "bg";
-        meta::PMetaClass<Background, name>.m_api = ApplicationAPI(this);
-        registerClass(&meta::PMetaClass<Background, name>);
+        // static constexpr const char name[] = "bg";
+        // meta::PMetaClass<Background, name>.m_api = ApplicationAPI(this);
+        // registerClass(&meta::PMetaClass<Background, name>);
+        registerObject(new BgMgr{{}, ApplicationAPI(this)});
         return Ok;
     }
 
@@ -86,9 +87,17 @@ WPError WallpaperEngine::addConnector(ConnectorBase* connector) {
     return Ok;
 }
 
-WPError WallpaperEngine::registerClass(xppr::meta::MetaClass* meta) {
+WPError WallpaperEngine::registerClass(xppr::meta::MetaType* meta) {
     for(ConnectorBase* cb : m_connectors) {
         cb->registerClass(meta);
+    }
+    return Ok;
+}
+
+
+WPError WallpaperEngine::registerObject(xppr::meta::MetaObject* meta) {
+    for(ConnectorBase* cb : m_connectors) {
+        cb->registerObject(meta);
     }
     return Ok;
 }

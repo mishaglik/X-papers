@@ -32,7 +32,8 @@ namespace xppr::wpeng {
         WPError loadPlugin(const char* filename);
         WPError addWidget(WidgetBase* widget, uint64_t display);
         WPError addConnector(ConnectorBase* connector);
-        WPError registerClass(xppr::meta::MetaClass* meta);
+        WPError registerClass(xppr::meta::MetaType* meta);
+        WPError registerObject(xppr::meta::MetaObject* meta);
 
       private:
 

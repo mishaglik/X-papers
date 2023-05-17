@@ -21,6 +21,12 @@ function(make_component COMPONENT COMPONENT_NAME)
     target_link_options(${COMPONENT} PUBLIC -rdynamic)
 endfunction()
 
+function(make_module COMPONENT COMPONENT_NAME)
+    project_log("Add module: ${COMPONENT_NAME}")
+    target_compile_definitions(${COMPONENT} PRIVATE XPPR_COMPONENT=\"${COMPONENT_NAME}\")
+    target_link_options(${COMPONENT} PUBLIC -rdynamic)
+endfunction()
+
 function(prepare_executable EXECUTABLE EXECUTABLE_NAME)
     make_component(${EXECUTABLE} ${EXECUTABLE_NAME})
     list(TRANSFORM COMPONENT_LIST PREPEND "\"")

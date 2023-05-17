@@ -7,7 +7,7 @@
 
 #include <Engine/WallpaperEngine/Event.hpp>
 #include <Engine/WallpaperEngine/Widget.hpp>
-#include <Engine/WallpaperEngine/MetaObject.hpp>
+#include <Engine/WallpaperEngine/MetaTypes.hpp>
 namespace xppr {
     namespace wpeng {
         class WallpaperEngine;
@@ -27,11 +27,12 @@ namespace xppr {
     // Pimple to WallpaperEngine both uninifing api and hiding class. 
     class ApplicationAPI {
     public:
-        ApplicationAPI(wpeng::WallpaperEngine* engine) : m_wallpaper(engine) {}
+        constexpr ApplicationAPI(wpeng::WallpaperEngine* engine) : m_wallpaper(engine) {}
         APIError addWidget(WidgetBase* widget, uint64_t display);
         APIError addConnector(ConnectorBase* connector);
         APIError loadPlugin(const char* path);
-        APIError registerClass(xppr::meta::MetaClass* meta);
+        APIError registerClass(xppr::meta::MetaType* meta);
+        APIError registerObject(xppr::meta::MetaObject* meta);
     private:
         friend class wpeng::WallpaperEngine;
         wpeng::WallpaperEngine* m_wallpaper;
@@ -45,8 +46,9 @@ namespace xppr {
     public:
         ConnectorBase() = default;
         virtual void update(uint64_t curtime) = 0;
-        virtual void registerClass(meta::MetaClass* meta) = 0;
-        virtual ~ConnectorBase() {}
+        virtual void registerClass(meta::MetaType* meta) = 0;
+        virtual void registerObject(meta::MetaObject* meta) = 0;
+        virtual ~ConnectorBase();
     };
 }
 

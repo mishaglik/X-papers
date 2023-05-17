@@ -1,3 +1,5 @@
+#if 0
+
 #ifndef ENGINE_WALLPAPERENGINE_METAOBJECT_HPP
 #define ENGINE_WALLPAPERENGINE_METAOBJECT_HPP
 #include <concepts>
@@ -115,3 +117,4 @@ namespace rebind {
 }   
 }
 #endif /* ENGINE_WALLPAPERENGINE_METAOBJECT_HPP */
+#endif

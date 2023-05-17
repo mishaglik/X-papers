@@ -16,10 +16,6 @@ int main() {
     app.loadPlugin("build/src/Plugins/API/Python/libpaperpy.so");
     app.run();   
     auto manager = winengine::XDisplayHandler::getInstance();
-    // while(1) {
-    //     winengine::event_t ev;
-    //     manager->nextEvent(&ev);
-    // }
     win->hide();
     
     manager->closeDisplay();

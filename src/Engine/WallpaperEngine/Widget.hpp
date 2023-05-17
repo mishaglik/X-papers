@@ -8,10 +8,10 @@
 
 namespace xppr {
 // class RenderWindow;
-class WidgetBase : public meta::MetaClass
+class WidgetBase
 {
 public:
-    virtual ~WidgetBase() {}
+    virtual ~WidgetBase();
     virtual void draw(RenderWindow& window) const = 0;
     virtual void update(uint64_t /*curtime*/) = 0;
     /**

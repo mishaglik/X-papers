@@ -1,37 +1,59 @@
 #include "Background.hpp"
+#include <Engine/WallpaperEngine/MetaUtils.hpp>
 #include <cassert>
 #include <cstddef>
 #include <cstdint>
 
 namespace xppr::wpeng {
 
-     static meta::MetaClass* setImage(meta::ArgPack* ap) {
-        Image img;
-        if(!img.loadFromFile(reinterpret_cast<char*>(ap->m_data[0]))) {
-            log::critical("Img not loaded");
-            return nullptr;
-        }
-        
-        assert(ap->self);
-        static_cast<Background* >(ap->self)->setImageList({img});
-        return nullptr;
-    }
-
-    static meta::MetaFunction BgMeths[] = {
-        {"setImage", "s", setImage},
-        {NULL}
+    static const meta::MetaFuction BgMeths[] = {
+        META_METHOD(Background, addImage),
+        {}
     };
 
-    Background::Background() {
-        m_name = "bg";
-        m_methods = BgMeths;
-        m_members = nullptr;
-    }
+    const meta::MetaType detail::BgType = {
+        "bg",
+        BgMeths,
+        nullptr,
+        nullptr
+    };
+
+    //  static meta::MetaO* setImage(meta::ArgPack* ap) {
+    //     Image img;
+    //     if(!img.loadFromFile(reinterpret_cast<char*>(ap->m_data[0]))) {
+    //         log::critical("Img not loaded");
+    //         return nullptr;
+    //     }
+        
+    //     assert(ap->self);
+    //     static_cast<Background* >(ap->self)->setImageList({img});
+    //     return nullptr;
+    // }
+
+    // static meta::MetaFunction BgMeths[] = {
+    //     {"setImage", "s", setImage},
+    //     {NULL}
+    // };
+
+    // Background::Background() {
+    //     m_name = "bg";
+    //     m_methods = BgMeths;
+    //     m_members = nullptr;
+    // }
 
     Background::Background(Vector2u /* winsize */) : Background() {
        
     }
     
+    void Background::addImage(const char* filename) {
+        xppr::Image image;
+        if(!image.loadFromFile(filename)) {
+            xppr::log::error("Failed to open file {}", filename);
+            return;
+        }
+        m_images.emplace_back();
+        m_images.back().loadFromImage(image);
+    }
 
 
     void Background::update(uint64_t curtime) {
@@ -56,8 +78,22 @@ namespace xppr::wpeng {
         m_sprite.setTexture(m_images[0]);
     }
 
-   
+    meta::MetaObject* BgMgr::add(uint64_t i) {
+        auto* bg = new Background();
+        m_api.addWidget(bg, i);
+        return bg;
+    }
 
-    
-    
+   
+    const meta::MetaFuction BgMgrMeths[] {
+        META_METHOD(BgMgr, add),
+        {nullptr, nullptr}
+    };
+
+    const meta::MetaType BgMgrType {
+        .name = "bg",
+        .methods = BgMgrMeths,
+        .members = nullptr,
+        .dtor = nullptr
+    };
 }

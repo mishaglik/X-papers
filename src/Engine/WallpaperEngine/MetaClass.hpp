@@ -1,3 +1,4 @@
+#if 0
 #ifndef ENGINE_WALLPAPERENGINE_METACLASS_HPP
 #define ENGINE_WALLPAPERENGINE_METACLASS_HPP
 
@@ -50,3 +51,4 @@ typedef struct MetaClass MetaClass;
 } // namespace xppr::meta
 #endif
 #endif /* ENGINE_WALLPAPERENGINE_METACLASS_HPP */
+#endif

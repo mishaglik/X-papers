@@ -5,7 +5,9 @@
 
 extern "C" void init_plugin(xppr::ApplicationAPI api);
 
-class Label : public xppr::WidgetBase {
+extern const xppr::meta::MetaType LabelType;
+
+class Label : public xppr::WidgetBase, public xppr::meta::MetaObjectT<&LabelType> {
 public:
     Label();
     const char* getName() const override {return "label";}
