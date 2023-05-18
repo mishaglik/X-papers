@@ -1,10 +1,10 @@
 #ifndef ENGINE_WALLPAPERENGINE_METAUTILS_HPP
 #define ENGINE_WALLPAPERENGINE_METAUTILS_HPP
 #include <Engine/WallpaperEngine/MetaTypes.hpp>
-#include <Utilities/utils.hpp>
 #include <concepts>
 #include <cstdint>
 #include <utility>
+#include <array>
 #include <Engine/WallpaperEngine/Connector.hpp>
 
 namespace xppr::meta {
@@ -31,48 +31,120 @@ T* meta_cast2(MetaObject* object) {
 
 namespace detail {
 
+    namespace traits {
+        template<typename T>
+        struct is_meta_typed : std::false_type {};
 
-    class MetaLong : public MetaObject {
-        public:
-        static const constexpr MetaType TypeObj{"Long", nullptr, nullptr, nullptr}; 
-        static constexpr const MetaType* Type = &TypeObj;
-        uint64_t m_long;
-    };
+        template<>
+        struct is_meta_typed<uint64_t> : std::true_type {};
+
+        template<>
+        struct is_meta_typed<const char*> : std::true_type {};
+        
+        template<>
+        struct is_meta_typed<std::string> : std::true_type {};
+
+        template<>
+        struct is_meta_typed<MetaObject* > : std::true_type {};
+
+        template<typename T>
+        struct is_meta_typed<std::vector<T>> : is_meta_typed<T> {};
+    }
+
+    template<size_t s1, size_t s2, size_t ...Idx1, size_t ...Idx2>
+    constexpr std::array<char, sizeof...(Idx1) + sizeof...(Idx2)> ccat(std::array<char, s1>lhs, std::array<char, s2> rhs, std::index_sequence<Idx1...>, std::index_sequence<Idx2...>) {
+        return {lhs[Idx1]..., rhs[Idx2]...};
+    }
+
+    template<size_t s1, size_t s2>
+    constexpr std::array<char, s1 + s2 - 1> concat(std::array<char, s1>lhs, std::array<char, s2> rhs) {
+        return ccat(lhs, rhs, std::make_index_sequence<s1-1>{}, std::make_index_sequence<s2>{});
+    }
+
 
     template<class T>
-    concept MetaParametr = 
-        std::same_as<T, uint64_t   > ||
-        std::same_as<T, const char*> ||
-        std::same_as<T, MetaObject*>;
+    concept MetaParametr = traits::is_meta_typed<T>::value;
+
+    template<MetaParametr... Ts>
+    struct GetSignature;
+
+    template<MetaParametr T, MetaParametr... Ts>
+    struct GetSignature<T, Ts...>{
+        constexpr static const char* Get() {
+            return m_sign.data();
+        }
+        constexpr static auto m_sign = concat(GetSignature<T>::m_sign, GetSignature<Ts...>::m_sign);
+    };
+
+    template<>
+    struct GetSignature<> {
+        constexpr static const char* Get() { return m_sign.data(); }
+        static constexpr const std::array<char, 1> m_sign = {'\0'};
+    };
+
+    template<>
+    struct GetSignature<uint64_t> {
+        constexpr static const char* Get() {return m_sign.data();}
+        static constexpr const std::array<char, 2> m_sign = {'L', '\0'};
+    };
+
+    template<>
+    struct GetSignature<const char*> {
+        constexpr static const char* Get() {return m_sign.data();}
+        static constexpr const std::array<char, 2> m_sign = {'s', '\0'};
+    };
+
+    template<>
+    struct GetSignature<std::string> {
+        constexpr static const char* Get() {return m_sign.data();}
+        static constexpr const std::array<char, 2> m_sign = {'s', '\0'};
+    };
+
+    template<>
+    struct GetSignature<MetaObject*> {
+        constexpr static const char* Get() {return m_sign.data();}
+        static constexpr const std::array<char, 2> m_sign = {'O', '\0'};
+    };
 
 
     template<MetaParametr T>
-    struct GetChar;
+    struct GetSignature<std::vector<T>> {
+        constexpr static const char* Get() {return m_sign.data();}
+        static constexpr const std::array<char, 2> lbracket = {'[', 0};
+        static constexpr const std::array<char, 2> rbracket = {']', 0};
+        static constexpr const auto m_sign = concat(lbracket, concat(GetSignature<T>::m_sign, rbracket));
 
-    template<>
-    struct GetChar<uint64_t> {
-        constexpr static char Get() {return 'L';}
-    };
-
-    template<>
-    struct GetChar<const char*> {
-        constexpr static char Get() {return 's';}
-    };
-
-    template<>
-    struct GetChar<MetaObject*> {
-        constexpr static char Get() {return 'O';}
     };
 
     template<MetaParametr T>
     struct arg_cast 
     {
-        T operator()(void* object) {
-            return reinterpret_cast<T>(object);
+        T&& operator()(MetaTyped object) {
+            return std::move(std::get<T>(object));
         }
     };
-    
 
+    template<>
+    struct arg_cast<const char*> 
+    {
+        const char* operator()(MetaTyped object) {
+            return std::get<std::string>(object).c_str();
+        }
+    };
+
+    template<MetaParametr T>
+    struct arg_cast<std::vector<T>> 
+    {
+        std::vector<T> operator()(MetaTyped object) {
+            std::vector<MetaTyped>& v = std::get<std::vector<MetaTyped>>(object);
+            std::vector<T> ret;
+
+            for(size_t i = 0; i < v.size(); ++i) {
+                ret.emplace_back(arg_cast<T>{}(v[i]));
+            }
+            return ret;
+        }
+    };
 
     template<typename... Args>
     bool All(bool arg, Args&&... args) {
@@ -105,12 +177,13 @@ namespace detail {
                 //     return nullptr;
                 // }
 
-                return (self->*Meth)(arg_cast<Args>{}(ap->m_data[Idx])...);
+                return (self->*Meth)(arg_cast<Args>{}(ap->m_args[Idx])...);
             }
             return nullptr;
         }
     public:
-        constexpr static const char signature[sizeof...(Args) + 1] = {GetChar<Args>::Get()...}; 
+        constexpr static const char* signature = GetSignature<Args...>::Get(); 
+
     };
 
     template<Meta T, MetaParametr... Args>
@@ -131,49 +204,39 @@ namespace detail {
                 //     return nullptr;
                 // }
 
-                (self->*Meth)(arg_cast<Args>{}(ap->m_data[Idx])...);
+                (self->*Meth)(arg_cast<Args>{}(ap->m_args[Idx])...);
             }
             return nullptr;
         }
     public:
-        constexpr static const char signature[sizeof...(Args) + 1] = {GetChar<Args>::Get()...}; 
+        constexpr static const char* signature = GetSignature<Args...>::Get(); 
     };
 
+}
+
+constexpr static inline size_t SignatureSize(const char* format) {
+    size_t ans = 0;
+    while(*format) {
+        switch (*format++) {
+            case 'L':
+            case 's':
+            case 'O':
+                ans++;
+                break;
+            case '[':
+            case ']':
+                break;
+            default: 
+                return -1ul;
+        }
+    }
+    return ans;
 }
 
 }
 #define META_METHOD(type, name) \
         {#name, xppr::meta::detail::GetCallback<decltype(&type::name)>::signature, xppr::meta::detail::GetCallback<decltype(&type::name)>::call<&type::name>}
 
-
-
-// template<class T, const char* name>
-// extern const xppr::meta::MetaType MetaMgrType;
-
-// template<class T, const char* name>
-// struct MetaMgr : xppr::meta::MetaObjectT<&MetaMgrType<T, name>> {
-//     xppr::ApplicationAPI m_api;
-//     xppr::meta::MetaObject* add(uint64_t i) {
-//         auto wid = new T();
-//         m_api.addWidget(wid, i);
-//         return wid;
-//     }
-// };
-
-// template<class T, const char* name>
-// const xppr::meta::MetaFuction MetaMgrMeths[] = {
-//     {"add", xppr::meta::detail::GetCallback<decltype(&(MetaMgr<T, name>::add))>::signature, xppr::meta::detail::GetCallback<decltype(&(MetaMgr<T, name>::add))>::template call<&(MetaMgr<T, name>::add)>},
-//     {nullptr, nullptr}
-// };
-
-// template<class T, const char* name>
-// const xppr::meta::MetaType MetaMgrType
-// {
-//     .name = name,
-//     .methods = MetaMgrMeths<T, name>,
-//     .members = nullptr,
-//     .dtor = nullptr
-// };
 
 
 #endif /* ENGINE_WALLPAPERENGINE_METAUTILS_HPP */

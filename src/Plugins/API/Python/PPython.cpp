@@ -3,6 +3,7 @@
 #include "PPython.hpp"
 #include "PaperPy.hpp"
 #include <Utilities/log.hpp>
+#include "Engine/WallpaperEngine/MetaUtils.hpp"
 
 using namespace xppr::meta;
 
@@ -185,6 +186,7 @@ static PyObject* MetaGetter(PyObject* self, void* closure) {
 
         case Void:
             Py_RETURN_NONE;
+        case Array:
         default:
             PyErr_SetString(PyExc_AttributeError, "Bad member type");
             Py_RETURN_NONE;
@@ -281,7 +283,7 @@ MetaSetter(PyObject* py_self, PyObject* object, void* closure) {
             *reinterpret_cast<MetaObject**>(&(self->*(member->offset))) = reinterpret_cast<MetaPyObject*>(object)->self;
             return 0;
         }
-
+        case Array:
         case Void:
         default:
             PyErr_SetString(PyExc_AttributeError, "Bad member type");
@@ -290,15 +292,17 @@ MetaSetter(PyObject* py_self, PyObject* object, void* closure) {
     return -1;
 }
 
+static ArgPack* ParseArguments(PyObject* tuple, const char* signature);
 
 static PyObject* 
 MetaPyMethodCall(PyObject* py_self, PyObject* args, PyObject* /*kwargs*/) {
     assert(py_self->ob_type == &MetaPyMethodObjectType);
-    static const size_t maxCallArgs = 6; //FIXME
+    // static const size_t maxCallArgs = 6; //FIXME
     MetaPyMethodObject* self = reinterpret_cast<MetaPyMethodObject*>(py_self);
-    assert(strnlen(self->func->signature, maxCallArgs + 1) <= maxCallArgs);
-    ArgPack* ap = reinterpret_cast<ArgPack*>(calloc(1, sizeof(struct ArgPack) + sizeof(void*) * (maxCallArgs + 1)));
+    ArgPack* ap = ParseArguments(args, self->func->signature);
     ap->self = self->self;
+    /*
+    assert(strnlen(self->func->signature, maxCallArgs + 1) <= maxCallArgs);
     if(!PyArg_ParseTuple(args, self->func->signature, &ap->m_data[0], &ap->m_data[1], &ap->m_data[2], &ap->m_data[3], &ap->m_data[4], &ap->m_data[5])) {
         Py_RETURN_NONE;
     }
@@ -307,9 +311,10 @@ MetaPyMethodCall(PyObject* py_self, PyObject* args, PyObject* /*kwargs*/) {
             ap->m_data[i] = reinterpret_cast<MetaObject*>(reinterpret_cast<MetaPyObject*>(ap->m_data[i])->self);
         }
     }
+    */
     MetaObject* retval = self->func->callback(ap);
     PyObject* ret = PyCharmer::Current->buildPyObject(retval);
-    free(ap);
+    delete ap;
     return ret;
 }
 
@@ -326,4 +331,78 @@ void PyCharmer::addModuleMember(xppr::meta::MetaObject* object) {
 PyCharmer::PyCharmer() {
     m_main_object_impl.m_type = &MainObjectType;
     
+}
+
+static const char* 
+ParseArgument(PyObject* object, const char* format, MetaTyped& slot) {
+    switch (*format) {
+        case 'L':
+            if(!PyLong_Check(object)) 
+                return format;
+            slot = PyLong_AsLong(object);
+            return ++format;
+        case 's':
+        {
+            if(!PyUnicode_Check(object)) 
+                return format;
+            PyObject* bytes = PyUnicode_AsASCIIString(object);
+            if(bytes == nullptr) {
+                return format;
+            }
+            slot = PyBytes_AsString(bytes);
+            Py_DECREF(bytes);
+            return ++format;
+        }
+        case 'O':
+            // Type check
+            slot = reinterpret_cast<MetaPyObject*>(object)->self;
+            return ++format;
+        case '[':
+            {
+            if(!PyList_Check(object)) {
+                return format;
+            }
+            format++;
+            size_t arr_size = PyList_GET_SIZE(object);
+            std::vector<MetaTyped> array(arr_size);
+            for(size_t i = 0; i < arr_size; ++i) {
+                if(ParseArgument(PyList_GET_ITEM(object, i), format, array[i]) == format) {
+                    return --format;
+                }
+            }
+            assert(*++format == ']');
+            slot = std::move(array);
+            return ++format;
+            }
+        case '\0':
+            return format;
+
+        default: 
+            return nullptr;
+    }
+    
+    return format;
+}
+
+static ArgPack* 
+ParseArguments(PyObject* tuple, const char* format) {
+    assert(PyTuple_Check(tuple));
+    size_t size = PyTuple_GET_SIZE(tuple);
+    size_t fmt_size = SignatureSize(format);
+    if(fmt_size < size) {
+        PyErr_SetString(PyExc_AttributeError, "Too many arguments");
+        return nullptr;
+    }
+
+    ArgPack* ap = new ArgPack;
+    ap->m_args.resize(fmt_size);
+    for(size_t i = 0; i < size; ++i) {
+        const char* ex_format = format;
+        format = ParseArgument(PyTuple_GET_ITEM(tuple, i), format, ap->m_args[i]);
+        if(format == ex_format) {
+            xppr::log::error("Bad arguments");
+            PyErr_SetString(PyExc_AttributeError, "Bad arguments");
+        }
+    }
+    return ap;
 }

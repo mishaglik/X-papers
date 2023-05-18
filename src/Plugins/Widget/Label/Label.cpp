@@ -1,5 +1,6 @@
 #include "Label.hpp"
 #include <Engine/WallpaperEngine/MetaUtils.hpp>
+#include "Utilities/log.hpp"
 
 static const xppr::meta::MetaFuction LabelMeths[] = {
     META_METHOD(Label, setText),
@@ -71,18 +72,17 @@ xppr::meta::MetaObject* LabelMgr::add(uint64_t i) {
 
 const xppr::meta::MetaFuction LabelMgrMeths[] {
     META_METHOD(LabelMgr, add),
-    {nullptr, nullptr}
+    {nullptr, nullptr, nullptr}
 };
 
 const xppr::meta::MetaType LabelMgrType {
     .name = "label",
     .methods = LabelMgrMeths,
-    .members = nullptr,
+    .members = nullptr, 
     .dtor = nullptr
 };
 
 extern "C" void init_plugin(xppr::ApplicationAPI api) { 
+    xppr::log::add_logger();
     api.registerObject(new LabelMgr{{}, api});
-    
-
 }

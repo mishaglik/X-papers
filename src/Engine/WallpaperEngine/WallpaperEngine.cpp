@@ -54,10 +54,6 @@ WallpaperEngine::~WallpaperEngine() {}
 
 WPError WallpaperEngine::loadPlugin(const char* filename) {
     if(strcmp(filename, "bg") == 0) {
-        // registerClass(m_displays[0].widgets[0]->getMeta());
-        // static constexpr const char name[] = "bg";
-        // meta::PMetaClass<Background, name>.m_api = ApplicationAPI(this);
-        // registerClass(&meta::PMetaClass<Background, name>);
         registerObject(new BgMgr{{}, ApplicationAPI(this)});
         return Ok;
     }

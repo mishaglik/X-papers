@@ -8,6 +8,7 @@ namespace xppr::wpeng {
 
     static const meta::MetaFuction BgMeths[] = {
         META_METHOD(Background, addImage),
+        META_METHOD(Background, addImages),
         {}
     };
 
@@ -30,6 +31,12 @@ namespace xppr::wpeng {
         }
         m_images.emplace_back();
         m_images.back().loadFromImage(image);
+    }
+
+    void Background::addImages(std::vector<std::string> filenames) {
+        for(const auto& filename : filenames) {
+            addImage(filename.c_str());
+        }
     }
 
 

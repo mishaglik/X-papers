@@ -2,6 +2,10 @@
 #define ENGINE_WALLPAPERENGINE_METATYPES_HPP
 
 #include <stddef.h>
+#include <cstdint>
+#include <variant>
+#include <vector>
+#include <string>
 
 #ifdef __cplusplus
 namespace xppr::meta {
@@ -31,6 +35,42 @@ enum MetaTypes {
     Long,
     String,
     Object,
+    Array,
+};
+
+template<class T>
+struct CArray {
+    T* data;
+    size_t size;
+};
+
+struct MetaTyped : std::variant<uint64_t, std::string, MetaObject*, std::vector<MetaTyped>> {
+    MetaTyped() = default;
+
+    MetaTyped& operator=(uint64_t obj) {
+        Variant::operator=(obj);
+        return *this;
+    }
+
+    MetaTyped& operator=(int64_t obj) {
+        return *this = static_cast<uint64_t>(obj);
+    }
+
+    template<class T> 
+    MetaTyped& operator=(T obj) {
+        Variant::operator=(std::forward<T>(obj));
+        return *this;
+    }
+
+    private: 
+        using Variant = std::variant<uint64_t, std::string, MetaObject*, std::vector<MetaTyped>>;
+};
+
+union MetaTypedEx {
+    uint64_t    m_long;
+    const char* m_string;
+    MetaObject* m_object;
+    CArray<MetaTypedEx> m_array;
 };
 
 struct MetaMember {
@@ -59,7 +99,7 @@ struct MetaObject {
 struct ArgPack {
     const char* m_signature;
     MetaObject* self;
-    void* m_data[];
+    std::vector<MetaTyped> m_args;
 };
 
 extern const MetaType ErrorType;

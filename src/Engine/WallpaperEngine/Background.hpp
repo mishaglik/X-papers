@@ -28,6 +28,7 @@ public:
 
     void setImageList(const Vector<Image>& images);
     void addImage(const char* filename);
+    void addImages(std::vector<std::string> filenames);
   
 private:
     Vector<Texture> m_images;

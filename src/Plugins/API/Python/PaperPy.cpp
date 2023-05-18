@@ -1,17 +1,16 @@
 #include "PaperPy.hpp"
 #include "PPython.hpp"
-#include "PyCInterface.h"
 #include <Utilities/utils.hpp>
 
 PyConnector* Connector = nullptr; 
 
 static xppr::meta::MetaObject* hello(xppr::meta::ArgPack* ap) {
-    printf("Hello %p\n", ap->m_data[0]);
+    printf("Hello %p\n", &ap->m_args[0]);
     return nullptr;
 }
 
 static xppr::meta::MetaObject* loadModule(xppr::meta::ArgPack* ap) {
-    Connector->m_app.loadPlugin(reinterpret_cast<char* >(ap->m_data[0]));
+    Connector->m_app.loadPlugin(std::get<std::string>(ap->m_args[0]).c_str());
     return nullptr;
 }
 
