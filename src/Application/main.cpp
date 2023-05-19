@@ -8,5 +8,6 @@ int main() {
     
     //test_open_window();
     test_video_handler("/home/execorn/Downloads/wallpaper.mp4");
+    //test_gl("/home/execorn/Downloads/wallpaper.mp4");
     //test_render_wallpaper("/home/execorn/Downloads/wallpaper.mp4");
 }

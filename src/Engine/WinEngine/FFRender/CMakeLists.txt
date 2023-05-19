@@ -1,3 +1,0 @@
-set( FFRENDER_HEADERS
-
-)

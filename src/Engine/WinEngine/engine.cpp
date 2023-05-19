@@ -9,11 +9,20 @@
 #include "WinEngine/WindowEngine.hpp"
 #include "WinEngine/XDisplayHandler.hpp"
 #include "WinEngine/proto.hpp"
+#include "glfwRender.hpp"
 #include "engine.hpp"
 
 #include <X11/Xlib.h>
 
-void handle_events(winengine::VideoHandler* handler, sf::Event& ev) {
+void test_gl(const char* filename) {
+    winengine::GlfwController controller;
+    
+    controller.Start(filename);
+}
+
+
+
+static void handle_events(winengine::VideoHandler* handler, sf::Event& ev) {
     auto video_render_obj = handler->getRenderer();
     if (ev.type == sf::Event::Closed || (ev.type == sf::Event::KeyPressed &&
                                          ev.key.code == sf::Keyboard::Escape)) {
@@ -21,8 +30,9 @@ void handle_events(winengine::VideoHandler* handler, sf::Event& ev) {
     }
 
     if (ev.type == sf::Event::Resized) {
-        video_render_obj.fit(0, 0, handler->getRenderWindow()->getSize().x,
-                             handler->getRenderWindow()->getSize().y);
+        video_render_obj.fit(
+            0, 0, static_cast<float>(handler->getRenderWindow()->getSize().x),
+            static_cast<float>(handler->getRenderWindow()->getSize().y));
         handler->setView(sf::View(sf::FloatRect(
             0, 0, (float)handler->getSize().x, (float)handler->getSize().y)));
     }
@@ -31,8 +41,9 @@ void handle_events(winengine::VideoHandler* handler, sf::Event& ev) {
 void test_video_handler(const char* path) {
     auto win_engine = winengine::WindowEngine::getInstance();
     auto main_mon = win_engine.getRandRInfo()[0];
-    //std::cout << main_mon.getX() << ' ' << main_mon.getY() << std::endl;
-    //std::cout << main_mon.getWidth() << ' ' << main_mon.getHeight() << std::endl;
+    // std::cout << main_mon.getX() << ' ' << main_mon.getY() << std::endl;
+    // std::cout << main_mon.getWidth() << ' ' << main_mon.getHeight() <<
+    // std::endl;
 
     winengine::VideoHandler my_movie(path, main_mon);
     my_movie.setFPSlimit(60);
