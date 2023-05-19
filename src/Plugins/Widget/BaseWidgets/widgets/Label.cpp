@@ -1,6 +1,7 @@
 #include "Label.hpp"
 #include <Engine/WallpaperEngine/MetaUtils.hpp>
 #include "Utilities/log.hpp"
+#include "SpriteWidget.hpp"
 
 static const xppr::meta::MetaFuction LabelMeths[] = {
     META_METHOD(Label, setText),
@@ -23,12 +24,8 @@ const xppr::meta::MetaType LabelType =
 Label::Label() {
 }
 
-
-void Label::update(uint64_t)  {
-}
-
-void Label::draw(xppr::RenderWindow& window) const  {
-    window.draw(m_text);
+void Label::drawOn(xppr::RenderTexture& tex) const  {
+    tex.draw(m_text);
 }
 
 void Label::setText(const char* text) {
@@ -52,37 +49,3 @@ void Label::setTextPos(uint64_t x, uint64_t y) {
     m_text.setPosition(static_cast<float>(x), static_cast<float>(y));
 }
 
-
-extern const xppr::meta::MetaType LabelMgrType;
-
-struct LabelMgr : xppr::meta::MetaObjectT<&LabelMgrType> {
-    xppr::ApplicationAPI m_api;
-    xppr::meta::MetaObject* add(uint64_t i);
-};
-
-xppr::meta::MetaObject* LabelMgr::add(uint64_t i) {
-    if(i >= m_api.NDisplays()) {
-        return new xppr::meta::MetaError{{}, xppr::meta::MetaError::Type::AttributeError, "index of display is too big!"};
-    }
-    auto* bg = new Label();
-    m_api.addWidget(bg, i);
-    return bg;
-}
-
-
-const xppr::meta::MetaFuction LabelMgrMeths[] {
-    META_METHOD(LabelMgr, add),
-    {nullptr, nullptr, nullptr}
-};
-
-const xppr::meta::MetaType LabelMgrType {
-    .name = "label",
-    .methods = LabelMgrMeths,
-    .members = nullptr, 
-    .dtor = nullptr
-};
-
-extern "C" void init_plugin(xppr::ApplicationAPI api) { 
-    xppr::log::add_logger();
-    api.registerObject(new LabelMgr{{}, api});
-}

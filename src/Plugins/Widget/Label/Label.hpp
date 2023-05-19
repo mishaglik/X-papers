@@ -16,9 +16,9 @@ public:
     bool handleEvent(xppr::EventBase&) override {return false;}
     void setText(const char* text);
     void setFont(const char* fontname);
-    void setColor(uint64_t color);
+    void setTextColor(uint64_t color);
     void setSize(uint64_t size);
-    void setPos(uint64_t x, uint64_t y);
+    void setTextPos(uint64_t x, uint64_t y);
     xppr::Text m_text;
     xppr::Font m_font;
 };

@@ -5,7 +5,6 @@
     This header is to be used as exported to write plugin. 
 */
 
-#include <Engine/WallpaperEngine/Event.hpp>
 #include <Engine/WallpaperEngine/Widget.hpp>
 #include <Engine/WallpaperEngine/MetaTypes.hpp>
 namespace xppr {

@@ -1,13 +1,13 @@
 #ifndef ENGINE_WALLPAPERENGINE_WIDGET_HPP
 #define ENGINE_WALLPAPERENGINE_WIDGET_HPP
 
-#include "Engine/WallpaperEngine/Event.hpp"
 #include "Engine/RenderEngine/REngine.hpp"
 #include <cstddef>
 #include <cstdint>
 
 namespace xppr {
 // class RenderWindow;
+struct EventBase;
 class WidgetBase
 {
 public:

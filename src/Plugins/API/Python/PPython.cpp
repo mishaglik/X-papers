@@ -111,27 +111,8 @@ void PyCharmer::registerType(const xppr::meta::MetaType* type) {
         type_object->tp_getset = members;
     }
 
-    size_t n_methods = CArrSize(type->methods);
-    if(n_methods != 0) {
-        // PyMemberDef* methods = new PyMemberDef[n_methods]; //TODO: Null check
-        // for(size_t i = 0; i < n_methods-1; ++i) {
-        //     methods[i] = {
-        //         .name = type->methods[i].name,
-        //         .type = T_OBJECT_EX,
-        //         .offset = static_cast<Py_ssize_t>(offsetof(MetaPyObject, methods) + i * sizeof(void* )),
-        //         .flags = READONLY,
-        //         .doc = "Doc",
-        //     };
-        // }
-        // 
-        // methods[n_methods-1] = {nullptr, 0, 0, 0, nullptr};
-        // type_object->tp_members = methods;
-        // type_object->tp_basicsize += (n_methods-1) * sizeof(MetaPyMethodObject* ); // Array of pointers MetaPyMethodObject* methods[];
-    }
-
     if(PyType_Ready(type_object) < 0) {
         xppr::log::error("Creating PyTypeObject for {} failed.", type->name);
-        delete type_object->tp_members;
         delete type_object->tp_getset;
         delete type_object;
         //FIXME: Pass error
@@ -289,7 +270,6 @@ MetaSetter(PyObject* py_self, PyObject* object, void* closure) {
             PyErr_SetString(PyExc_AttributeError, "Bad member type");
             return -1;
     }
-    return -1;
 }
 
 static ArgPack* ParseArguments(PyObject* tuple, const char* signature);

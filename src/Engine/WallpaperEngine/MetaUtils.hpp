@@ -28,6 +28,18 @@ T* meta_cast2(MetaObject* object) {
     }
     return nullptr;
 }
+namespace detail {
+
+template<typename T, size_t s1, size_t s2, size_t ...Idx1, size_t ...Idx2>
+    constexpr std::array<T, sizeof...(Idx1) + sizeof...(Idx2)> ccat(std::array<T, s1>lhs, std::array<T, s2> rhs, std::index_sequence<Idx1...>, std::index_sequence<Idx2...>) {
+        return {lhs[Idx1]..., rhs[Idx2]...};
+    }
+}
+
+template<typename T, size_t s1, size_t s2>
+constexpr std::array<T, s1 + s2 - 1> ZArrConcat(std::array<T, s1>lhs, std::array<T, s2> rhs) {
+    return detail::ccat(lhs, rhs, std::make_index_sequence<s1-1>{}, std::make_index_sequence<s2>{});
+}
 
 namespace detail {
 
@@ -37,6 +49,9 @@ namespace detail {
 
         template<>
         struct is_meta_typed<uint64_t> : std::true_type {};
+
+        template<>
+        struct is_meta_typed<uint32_t> : std::true_type {};
 
         template<>
         struct is_meta_typed<const char*> : std::true_type {};
@@ -51,16 +66,7 @@ namespace detail {
         struct is_meta_typed<std::vector<T>> : is_meta_typed<T> {};
     }
 
-    template<size_t s1, size_t s2, size_t ...Idx1, size_t ...Idx2>
-    constexpr std::array<char, sizeof...(Idx1) + sizeof...(Idx2)> ccat(std::array<char, s1>lhs, std::array<char, s2> rhs, std::index_sequence<Idx1...>, std::index_sequence<Idx2...>) {
-        return {lhs[Idx1]..., rhs[Idx2]...};
-    }
-
-    template<size_t s1, size_t s2>
-    constexpr std::array<char, s1 + s2 - 1> concat(std::array<char, s1>lhs, std::array<char, s2> rhs) {
-        return ccat(lhs, rhs, std::make_index_sequence<s1-1>{}, std::make_index_sequence<s2>{});
-    }
-
+    
 
     template<class T>
     concept MetaParametr = traits::is_meta_typed<T>::value;
@@ -73,7 +79,7 @@ namespace detail {
         constexpr static const char* Get() {
             return m_sign.data();
         }
-        constexpr static auto m_sign = concat(GetSignature<T>::m_sign, GetSignature<Ts...>::m_sign);
+        constexpr static auto m_sign = ZArrConcat(GetSignature<T>::m_sign, GetSignature<Ts...>::m_sign);
     };
 
     template<>
@@ -84,6 +90,12 @@ namespace detail {
 
     template<>
     struct GetSignature<uint64_t> {
+        constexpr static const char* Get() {return m_sign.data();}
+        static constexpr const std::array<char, 2> m_sign = {'L', '\0'};
+    };
+
+    template<>
+    struct GetSignature<uint32_t> {
         constexpr static const char* Get() {return m_sign.data();}
         static constexpr const std::array<char, 2> m_sign = {'L', '\0'};
     };
@@ -112,7 +124,7 @@ namespace detail {
         constexpr static const char* Get() {return m_sign.data();}
         static constexpr const std::array<char, 2> lbracket = {'[', 0};
         static constexpr const std::array<char, 2> rbracket = {']', 0};
-        static constexpr const auto m_sign = concat(lbracket, concat(GetSignature<T>::m_sign, rbracket));
+        static constexpr const auto m_sign = ZArrConcat(lbracket, ZArrConcat(GetSignature<T>::m_sign, rbracket));
 
     };
 
@@ -129,6 +141,14 @@ namespace detail {
     {
         const char* operator()(MetaTyped object) {
             return std::get<std::string>(object).c_str();
+        }
+    };
+
+    template<>
+    struct arg_cast<uint32_t> 
+    {
+        uint32_t operator()(MetaTyped object) {
+            return static_cast<uint32_t>(std::get<uint64_t>(object));
         }
     };
 
@@ -156,10 +176,10 @@ namespace detail {
         return arg;
     }
 
-    template<class F>
+    template<typename F>
     struct GetCallback;
 
-    template<Meta T, MetaParametr... Args>
+    template<typename T, MetaParametr... Args>
     struct GetCallback<  MetaObject* (T::*)(Args...)> {
         using MethType = MetaObject* (T::*)(Args...);
 
@@ -171,7 +191,7 @@ namespace detail {
     private:
         template<MethType Meth, std::size_t... Idx>
         static MetaObject* call_impl(ArgPack* ap, std::index_sequence<Idx...>) {
-            if(T* self = meta_cast<T>(ap->self, T::Type)) {
+            if(T* self = static_cast<T*>(ap->self)) {
                 
                 // if(!All(arg_check<Args>(ap->m_data[Idx], ap->m_signature[Idx])...)) {
                 //     return nullptr;
@@ -186,7 +206,7 @@ namespace detail {
 
     };
 
-    template<Meta T, MetaParametr... Args>
+    template<typename T, MetaParametr... Args>
     struct GetCallback<  void (T::*)(Args...)> {
         using MethType = void (T::*)(Args...);
 
@@ -198,7 +218,7 @@ namespace detail {
     private:
         template<MethType Meth, std::size_t... Idx>
         static MetaObject* call_impl(ArgPack* ap, std::index_sequence<Idx...>) {
-            if(T* self = meta_cast2<T>(ap->self)) {
+            if(T* self = static_cast<T*>(ap->self)) {
                 
                 // if(!All(arg_check<Args>(ap->m_data[Idx], ap->m_signature[Idx])...)) {
                 //     return nullptr;
@@ -234,9 +254,14 @@ constexpr static inline size_t SignatureSize(const char* format) {
 }
 
 }
+#define META_CALLBACK(meth)  \
+    xppr::meta::detail::GetCallback<decltype(meth)>::call<meth>
+
+#define META_SIGNATURE(meth) \
+    xppr::meta::detail::GetCallback<decltype(meth)>::signature
+
 #define META_METHOD(type, name) \
         {#name, xppr::meta::detail::GetCallback<decltype(&type::name)>::signature, xppr::meta::detail::GetCallback<decltype(&type::name)>::call<&type::name>}
-
 
 
 #endif /* ENGINE_WALLPAPERENGINE_METAUTILS_HPP */
