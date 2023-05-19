@@ -7,6 +7,7 @@ set(WINDOW_ENGINE_HEADERS
     VideoHandler.hpp
     glfwVideo.hpp
     glfwRender.hpp
+
 )
 
 set(WINDOW_ENGINE_SOURCES
@@ -43,6 +44,7 @@ pkg_check_modules(LIBAV REQUIRED IMPORTED_TARGET
 )
 
 target_link_libraries(windowEngine PUBLIC PkgConfig::LIBAV)
+
 
 target_include_directories(windowEngine PUBLIC ${XCB_INCLUDE_DIR} ${X11_INCLUDE_DIR})
 target_link_libraries(windowEngine PUBLIC ${XCB_LIBRARIES} ${X11_LIBRARIES} X11::Xrandr)

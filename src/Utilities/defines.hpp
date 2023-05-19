@@ -3,6 +3,8 @@
 namespace xppr {
     using byte_t = char;
 
+    template<class T>
+    using Vector = std::vector<T>;
 
 #ifndef NDEBUG
 
@@ -26,6 +28,8 @@ namespace xppr {
 #define assert(x)
 
 #endif
+
+#define NOT_IMPLEMENTED xppr::log::critical("{}:{}:{} not implemented", __FILE__, __LINE__, __PRETTY_FUNCTION__); THROW(std::runtime_error("Not implemented"))
 
 // timestamp: [ERROR] module: 
 

@@ -170,7 +170,18 @@ void test_open_window() {
     ints[0] = 0xFFFFFFFF;
     ints[1] = 2;
 
+
     auto wm_desktop = manager->createAtom("_NET_WM_DESKTOP", True);
+
+    win->changeProperty(wm_desktop, XA_ATOM, 32, PropModeReplace,
+                        (unsigned char*)ints, 2);
+
+    // auto wm_state = manager->createAtom("_NET_WM_STATE", true);
+    // auto wm_fullscreen = manager->createAtom("_NET_WM_STATE_FULLSCREEN",
+    // true);
+
+    // win->changeProperty(wm_state, XA_ATOM, 32, PropModeReplace,
+    //                     (unsigned char*)&wm_fullscreen, 1);
 
     win->changeProperty(wm_desktop, XA_ATOM, 32, PropModeReplace,
                         (unsigned char*)ints, 2);
@@ -187,14 +198,5 @@ void test_open_window() {
     win->clear();
     win->show();
 
-    while (1) {
-        XEvent event;
-
-        manager->nextEvent(&event);
-    }
-
-    win->hide();
-    manager->closeDisplay();
-
-    return;
+    return win;
 }

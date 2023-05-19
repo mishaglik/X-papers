@@ -1,6 +1,7 @@
 #include "XDisplayHandler.hpp"
 #include <X11/Xlib.h>
 #include "WinEngine/XWindowHandler.hpp"
+
 #include "WinEngine/proto.hpp"
 
 namespace winengine {

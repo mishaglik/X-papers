@@ -170,6 +170,7 @@ WinEngineErrTypes WindowEngine::enumerateDisplays() {
         DisplayInfo cur_display(display_name);
         // can't use indexation, need to use push_back since the amount of
         // displays can't be gotten beforehand
+
         m_displays.emplace_back(cur_display);
         ++m_displays_cnt;
     }
