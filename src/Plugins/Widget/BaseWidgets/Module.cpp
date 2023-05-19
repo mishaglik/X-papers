@@ -25,7 +25,7 @@ struct BaseWidgetsMgr : xppr::meta::MetaObjectT<&BaseWidgetsMgrType> {
         if(i >= m_api.NDisplays()) {
             return new xppr::meta::MetaError{{}, xppr::meta::MetaError::Type::AttributeError, "Index of display is too big!"};
         }
-        auto* wid = new T(100, 100);
+        auto* wid = new T();
         m_api.addWidget(wid, i);
         return wid;
     }
