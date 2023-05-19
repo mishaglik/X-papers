@@ -4,6 +4,7 @@ set(WINDOW_ENGINE_HEADERS
     XWindowHandler.hpp
     proto.hpp
     engine.hpp
+    VideoHandler.hpp
 )
 
 set(WINDOW_ENGINE_SOURCES
@@ -11,6 +12,7 @@ set(WINDOW_ENGINE_SOURCES
     WindowEngine.cpp
     XDisplayHandler.cpp
     XWindowHandler.cpp
+    VideoHandler.cpp
 )
 
 add_library(windowEngine ${WINDOW_ENGINE_HEADERS} ${WINDOW_ENGINE_SOURCES})
@@ -28,5 +30,6 @@ target_include_directories(windowEngine PUBLIC ${XCB_INCLUDE_DIR} ${X11_INCLUDE_
 target_link_libraries(windowEngine PUBLIC ${XCB_LIBRARIES} ${X11_LIBRARIES} X11::Xrandr)
 
 target_link_libraries(windowEngine PRIVATE utilities)
+add_subdirectory(FFRender)
 
 set (COMPONENT_LIST ${COMPONENT_LIST} PARENT_SCOPE)
