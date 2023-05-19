@@ -32,8 +32,8 @@ public:
   
 private:
     Vector<Texture> m_images;
-    uint64_t m_update_speed = 1'000;
-    Sprite m_sprite;    
+    uint64_t m_update_speed = 10'000;
+    mutable Sprite m_sprite;    
 };
 
 extern const meta::MetaType BgMgrType;

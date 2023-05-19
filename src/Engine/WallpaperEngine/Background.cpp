@@ -39,7 +39,6 @@ namespace xppr::wpeng {
         }
     }
 
-
     void Background::update(uint64_t curtime) {
         if(m_images.empty()) [[unlikely]] {return;}
         size_t current = curtime / m_update_speed % m_images.size();
@@ -49,6 +48,10 @@ namespace xppr::wpeng {
     void Background::draw(RenderWindow& window) const {
         if(m_images.empty()) [[unlikely]] {
             window.clear();
+        }
+        if(m_sprite.getTexture() != nullptr) {
+            float scale = static_cast<float>(window.getSize().y) / m_sprite.getTexture()->getSize().y;
+            m_sprite.setScale(scale, scale);
         }
         window.draw(m_sprite);
     }
