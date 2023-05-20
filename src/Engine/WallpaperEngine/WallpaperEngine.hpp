@@ -2,10 +2,18 @@
 #define ENGINE_WALLPAPERENGINE_WALLPAPERENGINE_HPP
 #include "WallpaperEngine/Widget.hpp"
 #include <RenderEngine/REngine.hpp>
+#include "WallpaperEngine/Connector.hpp"
 #include <WinEngine/XWindowHandler.hpp>
 #include <Utilities/utils.hpp>
 #include <cstddef>
-namespace xppr {    
+namespace xppr::wpeng {    
+
+    enum WPError : uint64_t {
+      Ok,
+      Invalid,
+      Unknown,
+    };
+
 
     class WallpaperEngine {
       using XWindowHandler = winengine::XWindowHandler;
@@ -21,6 +29,12 @@ namespace xppr {
         void setBackgroundImages(const Vector<Image>& image, size_t win);
         
 
+        WPError loadPlugin(const char* filename);
+        WPError addWidget(WidgetBase* widget, uint64_t display);
+        WPError addConnector(ConnectorBase* connector);
+        WPError registerClass(xppr::meta::MetaType* meta);
+        WPError registerObject(xppr::meta::MetaObject* meta);
+        size_t NDisplays() const {return m_displays.size();}
       private:
 
       struct Display {
@@ -35,10 +49,11 @@ namespace xppr {
         }
       };
 
+        Vector<ConnectorBase*> m_connectors;
         Vector<Display> m_displays;
         bool m_quitted = false;
         void cycle();
-        
+      
     };
 
 }

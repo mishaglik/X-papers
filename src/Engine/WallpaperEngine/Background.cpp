@@ -1,12 +1,42 @@
 #include "Background.hpp"
-#include <SFML/System/Vector2.hpp>
+#include <Engine/WallpaperEngine/MetaUtils.hpp>
 #include <cassert>
 #include <cstddef>
 #include <cstdint>
 
 namespace xppr::wpeng {
 
-    Background::Background(Vector2u winsize) {
+    static const meta::MetaFuction BgMeths[] = {
+        META_METHOD(Background, addImage),
+        META_METHOD(Background, addImages),
+        {}
+    };
+
+    const meta::MetaType detail::BgType = {
+        "bg",
+        BgMeths,
+        nullptr,
+        nullptr
+    };
+
+    Background::Background(Vector2u /* winsize */) : Background() {
+       
+    }
+    
+    void Background::addImage(const char* filename) {
+        xppr::Image image;
+        if(!image.loadFromFile(filename)) {
+            xppr::log::error("Failed to open file {}", filename);
+            return;
+        }
+        m_images.emplace_back();
+        m_images.back().loadFromImage(image);
+    }
+
+    void Background::addImages(std::vector<std::string> filenames) {
+        for(const auto& filename : filenames) {
+            addImage(filename.c_str());
+        }
     }
 
     void Background::update(uint64_t curtime) {
@@ -19,6 +49,10 @@ namespace xppr::wpeng {
         if(m_images.empty()) [[unlikely]] {
             window.clear();
         }
+        if(m_sprite.getTexture() != nullptr) {
+            float scale = static_cast<float>(window.getSize().y) / m_sprite.getTexture()->getSize().y;
+            m_sprite.setScale(scale, scale);
+        }
         window.draw(m_sprite);
     }
 
@@ -30,4 +64,23 @@ namespace xppr::wpeng {
         }
         m_sprite.setTexture(m_images[0]);
     }
+
+    meta::MetaObject* BgMgr::add(uint64_t i) {
+        auto* bg = new Background();
+        m_api.addWidget(bg, i);
+        return bg;
+    }
+
+   
+    const meta::MetaFuction BgMgrMeths[] {
+        META_METHOD(BgMgr, add),
+        {nullptr, nullptr}
+    };
+
+    const meta::MetaType BgMgrType {
+        .name = "bg",
+        .methods = BgMgrMeths,
+        .members = nullptr,
+        .dtor = nullptr
+    };
 }

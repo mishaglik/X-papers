@@ -18,6 +18,13 @@ function(make_component COMPONENT COMPONENT_NAME)
     set (COMPONENT_LIST ${COMPONENT_LIST} CACHE INTERNAL "components")
     project_log("Add component: ${COMPONENT_NAME}")
     target_compile_definitions(${COMPONENT} PRIVATE XPPR_COMPONENT=\"${COMPONENT_NAME}\")
+    target_link_options(${COMPONENT} PUBLIC -rdynamic)
+endfunction()
+
+function(make_module COMPONENT COMPONENT_NAME)
+    project_log("Add module: ${COMPONENT_NAME}")
+    target_compile_definitions(${COMPONENT} PRIVATE XPPR_COMPONENT=\"${COMPONENT_NAME}\")
+    target_link_options(${COMPONENT} PUBLIC -rdynamic)
 endfunction()
 
 function(prepare_executable EXECUTABLE EXECUTABLE_NAME)

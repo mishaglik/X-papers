@@ -1,16 +1,17 @@
 #ifndef ENGINE_WALLPAPERENGINE_WIDGET_HPP
 #define ENGINE_WALLPAPERENGINE_WIDGET_HPP
 
-#include "WallpaperEngine/Event.hpp"
-#include <RenderEngine/REngine.hpp>
+#include "Engine/RenderEngine/REngine.hpp"
 #include <cstddef>
 #include <cstdint>
-namespace xppr {
 
-class WidgetBase 
+namespace xppr {
+// class RenderWindow;
+struct EventBase;
+class WidgetBase
 {
 public:
-    virtual ~WidgetBase() {}
+    virtual ~WidgetBase();
     virtual void draw(RenderWindow& window) const = 0;
     virtual void update(uint64_t /*curtime*/) = 0;
     /**
