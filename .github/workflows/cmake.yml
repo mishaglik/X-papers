@@ -25,7 +25,7 @@ jobs:
     
     - name: Install xcb
       run: sudo apt install xcb
-      
+
     - name: Install x11
       run: sudo apt-get install libx11-dev libxrandr-dev
 
@@ -37,6 +37,9 @@ jobs:
 
     - name: Install ecm
       run: sudo apt install extra-cmake-modules
+
+    - name: Install ffmpeg
+      run: sudo apt install ffmpeg
 
     - name: Configure CMake
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
