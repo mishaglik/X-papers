@@ -10,6 +10,10 @@
 int main() {
     xppr::log::init_logger();
     
+
+    
+//     test_video_handler("/home/execorn/Downloads/wallpaper.mp4");
+  
     auto* win = test_open_window();
     
     xppr::wpeng::WallpaperEngine app({win});
@@ -19,5 +23,4 @@ int main() {
     win->hide();
     
     manager->closeDisplay();
-
 }
