@@ -15,15 +15,12 @@ int main() {
 //     test_video_handler("/home/execorn/Downloads/wallpaper.mp4");
   
     auto* win = test_open_window();
-
-    // xppr::Vector<xppr::Image> bg(2);
-    // bg[0].loadFromFile("/home/gms/I1.jpg");
-    // bg[1].loadFromFile("/home/gms/I2.jpg");
-    xppr::WallpaperEngine app({win});
-    // app.setBackgroundImages(bg, 0);
+    
+    xppr::wpeng::WallpaperEngine app({win});
+    app.loadPlugin("build/src/Plugins/API/Python/libpaperpy.so");
     app.run();   
-
-    win->hide();
     auto manager = winengine::XDisplayHandler::getInstance();
+    win->hide();
+    
     manager->closeDisplay();
 }

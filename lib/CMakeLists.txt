@@ -16,6 +16,8 @@ FetchContent_Declare(
         GIT_REPOSITORY https://github.com/gabime/spdlog.git
         GIT_TAG v1.11.0
 )
+set(SPDLOG_BUILD_PIC ON)
+set(SPDLOG_ENABLE_PCH ON)
 FetchContent_MakeAvailable(spdlog)
 
 find_package(ECM REQUIRED NO_MODULE)

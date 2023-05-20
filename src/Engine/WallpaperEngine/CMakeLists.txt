@@ -14,7 +14,8 @@ set(WP_ENGINE_SOURCES
     Connector.cpp
 )
 
-add_library(wallpaperEngine ${WP_ENGINE_HEADERS} ${WP_ENGINE_SOURCES})
+
+add_library(wallpaperEngine OBJECT ${WP_ENGINE_HEADERS} ${WP_ENGINE_SOURCES})
 make_component(wallpaperEngine WallpaperEngine)
 target_include_directories(wallpaperEngine PUBLIC ..)
 
