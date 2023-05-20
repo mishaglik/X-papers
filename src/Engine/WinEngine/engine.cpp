@@ -138,7 +138,7 @@ void test_render_wallpaper(const char* path = nullptr) {
     manager->closeDisplay();
 }
 
-void test_open_window() {
+winengine::XWindowHandler* test_open_window() {
     auto engine = winengine::WindowEngine::getInstance();
     for (std::size_t i = 0; i < engine.getTotalDisplays(); ++i) {
         std::cout << i << ' ' << engine[i].getScreenCount() << std::endl;

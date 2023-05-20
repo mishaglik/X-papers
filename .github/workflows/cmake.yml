@@ -25,10 +25,15 @@ jobs:
     
     - name: Install xcb
       run: sudo apt install xcb
+      
     - name: Install x11
       run: sudo apt-get install libx11-dev libxrandr-dev
-    - name: Intall xmu
+
+    - name: Install xmu
       run: sudo apt-get install libxmu-dev
+
+    - name : Install glfw
+      run: sudo apt-get install libglfw3 libglfw3-dev
 
     - name: Install ecm
       run: sudo apt install extra-cmake-modules
