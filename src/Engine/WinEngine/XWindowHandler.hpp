@@ -13,6 +13,10 @@ class XWindowHandler {
     friend class XDisplayHandler;
 
    private:
+
+    XWindowHandler(XDisplayHandler* manager, win_t id) :
+        m_win_id(id), m_manager(manager) {}
+  
     XWindowHandler(XDisplayHandler* manager,
                    display_t* display,
                    pair_t coords,

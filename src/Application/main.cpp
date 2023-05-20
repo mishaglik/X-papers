@@ -10,6 +10,10 @@
 int main() {
     xppr::log::init_logger();
     
+
+    
+//     test_video_handler("/home/execorn/Downloads/wallpaper.mp4");
+  
     auto* win = test_open_window();
 
     // xppr::Vector<xppr::Image> bg(2);
@@ -22,5 +26,4 @@ int main() {
     win->hide();
     auto manager = winengine::XDisplayHandler::getInstance();
     manager->closeDisplay();
-
 }
