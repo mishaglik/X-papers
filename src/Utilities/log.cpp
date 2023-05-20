@@ -8,47 +8,49 @@
 
 namespace xppr::log {
 
-    class module_format_flag : public spdlog::custom_flag_formatter
-    {
-    public:
-        void format(const spdlog::details::log_msg &, const std::tm &, spdlog::memory_buf_t &dest) override
-        {
-            std::string some_txt = "custom-flag";
-            dest.append(some_txt.data(), some_txt.data() + some_txt.size());
-        }
-
-        std::unique_ptr<custom_flag_formatter> clone() const override
-        {
-            return spdlog::details::make_unique<module_format_flag>();
-        }
-    };
-
-
-
+    static std::shared_ptr<spdlog::sinks::stderr_color_sink_mt > ConsoleSink;
+    static std::shared_ptr<spdlog::sinks::rotating_file_sink_mt> FileSink;
 
     void init_logger(const char* components[]) noexcept
     {
+        if(ConsoleSink != nullptr) {
+            return;
+        }
+
         try {
-            auto console_sink = std::make_shared<spdlog::sinks::stderr_color_sink_mt>();
-            console_sink->set_level(spdlog::level::trace);
-            console_sink->set_pattern("[%x %T.%e] [%n] <%^%l%$> %v");
+            ConsoleSink = std::make_shared<spdlog::sinks::stderr_color_sink_mt>();
+            ConsoleSink->set_level(spdlog::level::trace);
+            ConsoleSink->set_pattern("[%x %T] [%n] <%^%l%$> %v");
 
-            auto file_sink = std::make_shared<spdlog::sinks::rotating_file_sink_mt>("log/x-papers.log", 1024 * 1024, 5, true);
-            file_sink->set_level(spdlog::level::trace);
-            // file_sink->set_pattern("[%x %T.%e] [%n] <%l>  %v");
+            FileSink = std::make_shared<spdlog::sinks::rotating_file_sink_mt>("log/x-papers.log", 1024 * 1024, 5, true);
+            FileSink->set_level(spdlog::level::trace);
+            FileSink->set_pattern("[%x %T.%e] [%n] <%l>  %v");
 
-            spdlog::sinks_init_list sink_list = { file_sink, console_sink };
             while(*components) {
-                spdlog::register_logger(std::make_shared<spdlog::logger>(*(components), spdlog::sinks_init_list({console_sink, file_sink})));
+                spdlog::register_logger(std::make_shared<spdlog::logger>(*(components), spdlog::sinks_init_list({ConsoleSink, FileSink})));
                 spdlog::get(*components)->info("{} logger initted", *components);
                 components++;
             }
-            spdlog::set_default_logger(std::make_shared<spdlog::logger>("default", spdlog::sinks_init_list({console_sink, file_sink})));
+            spdlog::set_default_logger(std::make_shared<spdlog::logger>("default", spdlog::sinks_init_list({ConsoleSink, FileSink})));
             info("All loggers initted successfully");
         } catch(const spdlog::spdlog_ex& ex) {
             fprintf(stderr, "Log initialization failed: %s", ex.what());
             std::exit(-1);
         }
+    }
+
+    void add_logger(const char* component) noexcept {
+        try {
+            spdlog::register_logger(std::make_shared<spdlog::logger>(component, spdlog::sinks_init_list({ConsoleSink, FileSink})));
+            spdlog::get(component)->info("{} logger initted", component);            
+        } catch(const spdlog::spdlog_ex& ex) {
+            fprintf(stderr, "Log initialization failed: %s", ex.what());
+            std::exit(-1);
+        }
+    }
+
+    std::shared_ptr<spdlog::logger> get_logger(const char* component) noexcept {
+        return spdlog::get(component);
     }
 
 }
