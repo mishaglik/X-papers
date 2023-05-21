@@ -68,7 +68,7 @@ class XDisplayHandler {
     display_t* getDisplay() {
         return m_display;
     }
-
+  
     friend class XWindowHandler;
 
    private:

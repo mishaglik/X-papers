@@ -40,8 +40,7 @@ VideoHandler::VideoHandler(const std::string& path, MonitorInfo& monitor, sf::Re
 
     auto m_monitor_positions = m_monitor_info.getPosition();
 
-    auto x_pos = static_cast<int>(m_monitor_positions.x);
-    auto y_pos = static_cast<int>(m_monitor_positions.y);
+        auto m_monitor_positions = m_monitor_info.getPosition();
 
     if (m_renderwindow == nullptr) {
         xppr::log::info("Creating new window for drawing\n");

@@ -22,9 +22,9 @@ int main() {
     
     manager->closeDisplay();
     */
-    auto manager = winengine::XDisplayHandler::getInstance();
+
     test_video_handler("/home/execorn/Downloads/wallpaper.mp4");
-    manager->closeDisplay();
+
 
     return 0;
 }

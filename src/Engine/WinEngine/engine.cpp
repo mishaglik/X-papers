@@ -5,6 +5,7 @@
 #include <X11/Xlib.h>
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Window/WindowStyle.hpp>
+
 #include "Utilities/log.hpp"
 #include "WinEngine/WindowEngine.hpp"
 #include "WinEngine/XDisplayHandler.hpp"
@@ -36,6 +37,7 @@ static void handle_events(winengine::VideoHandler* handler, sf::Event& ev) {
 }
 
 void test_open_window() {
+
     auto engine = winengine::WindowEngine::getInstance();
     for (std::size_t i = 0; i < engine.getTotalDisplays(); ++i) {
         std::cout << i << ' ' << engine[i].getScreenCount() << std::endl;
