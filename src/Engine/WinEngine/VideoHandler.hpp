@@ -14,6 +14,7 @@
 #include <cstdint>
 #include <functional>
 #include <sfeMovie/Movie.hpp>
+#include <string>
 
 #include "WinEngine/proto.hpp"
 #include "WindowEngine.hpp"
@@ -28,10 +29,7 @@ class VideoHandler {
 
     ~VideoHandler();
 
-    VideoHandler(const std::string& path, const win_t win_id);
-
-    
-    VideoHandler(const std::string& path, MonitorInfo& monitor);
+    VideoHandler(const std::string& path, MonitorInfo& monitor, sf::RenderWindow* win = nullptr);
 
 
     void start(std::function<void(VideoHandler* video, sf::Event& ev)> func);
@@ -110,7 +108,6 @@ class VideoHandler {
 
     XWindowHandler* m_xlib_window;
 
-    win_t m_win_id = 0;
 };
 
 }  // namespace winengine

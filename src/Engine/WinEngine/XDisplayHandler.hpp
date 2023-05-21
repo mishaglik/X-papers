@@ -32,6 +32,7 @@ class XDisplayHandler {
                               win_attr_t* attributes = nullptr);
 
     XWindowHandler* addWindow(const win_t id);
+
     atom_t createAtom(const char* atom_name, int only_if_exists);
 
     int flush();
@@ -57,18 +58,24 @@ class XDisplayHandler {
     std::size_t getTotalWindows() const { return m_total_windows; }
 
     XDisplayHandler(XDisplayHandler const&) = delete;
+
     XDisplayHandler& operator=(XDisplayHandler const&) = delete;
 
     bool setBackgroundProperties(win_t target_id);
 
     bool setBackgroundProperties(XWindowHandler* target_win);
 
+    display_t* getDisplay() {
+        return m_display;
+    }
+  
     friend class XWindowHandler;
 
    private:
     std::size_t m_total_windows = 0;
 
     display_t* m_display = nullptr;
+    
     screen_t m_screen = 0;
 
     std::vector<XWindowHandler*> m_windows_list;
