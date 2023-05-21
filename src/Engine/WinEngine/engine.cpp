@@ -2,6 +2,10 @@
 /// Headers
 ////////////////////////////////////////////////////////////
 #include "engine.hpp"
+#include <X11/Xlib.h>
+#include <SFML/Graphics/RenderWindow.hpp>
+#include <SFML/Window/WindowStyle.hpp>
+
 #include "Utilities/log.hpp"
 #include "WinEngine/WindowEngine.hpp"
 #include "WinEngine/XDisplayHandler.hpp"
@@ -32,18 +36,8 @@ static void handle_events(winengine::VideoHandler* handler, sf::Event& ev) {
     }
 }
 
-void test_video_handler(const char* path) {
-    auto win_engine = winengine::WindowEngine::getInstance();
-    auto main_mon = win_engine.getRandRInfo()[0];
+void test_open_window() {
 
-    winengine::VideoHandler my_movie(path, main_mon);
-    my_movie.setFPSlimit(60);
-    my_movie.enableVerticalSync();
-
-    my_movie.start(handle_events);
-}
-
-winengine::XWindowHandler* test_open_window() {
     auto engine = winengine::WindowEngine::getInstance();
     for (std::size_t i = 0; i < engine.getTotalDisplays(); ++i) {
         std::cout << i << ' ' << engine[i].getScreenCount() << std::endl;
@@ -99,10 +93,17 @@ winengine::XWindowHandler* test_open_window() {
     win->clear();
     win->show();
 
-    return win;
+    auto disp = manager->getDisplay();
+    while (true) {
+        XEvent event;
+        XNextEvent(disp, &event);
+    }
+
+    win->hide();
+    manager->closeDisplay();
 }
 
-winengine::XWindowHandler* openSimpleWindow(winengine::MonitorInfo* monitor) {
+sf::RenderWindow* openSimpleWindow(winengine::MonitorInfo* monitor) {
     winengine::MonitorInfo mon_info;
 
     if (monitor == nullptr) {
@@ -111,27 +112,27 @@ winengine::XWindowHandler* openSimpleWindow(winengine::MonitorInfo* monitor) {
         mon_info = *monitor;
     }
 
-    // std::cout << mon_info.getPosition().x <<  ' ' << mon_info.getPosition().y
-    // << std::endl; std::cout << mon_info.getDimensions().x <<  ' ' <<
-    // mon_info.getDimensions().y << std::endl;
-
-    winengine::win_attr_t attrib;
-    attrib.override_redirect = True;
-
-    auto manager = winengine::XDisplayHandler::getInstance();
-
-    auto win =
-        manager->addWindow(mon_info.getPosition(), mon_info.getDimensions(), 0,
-                           winengine::Parent, CopyFromParent, 0, &attrib);
-    if (win == nullptr) {
-        xppr::log::error("Error opening window\n");
-    }
-
-    manager->setBackgroundProperties(win);
-
-    win->setBackground(0xFFFFFF);
-    win->clear();
-    win->show();
+// std::cout << mon_info.getPosition().x <<  ' ' << mon_info.getPosition().y
+// << std::endl; std::cout << mon_info.getDimensions().x <<  ' ' <<
+// mon_info.getDimensions().y << std::endl;
+#undef None
+    auto win = new sf::RenderWindow(
+        sf::VideoMode(static_cast<int>(mon_info.getDimensions().x),
+                      static_cast<int>(mon_info.getDimensions().y)),
+        "X-papers", sf::Style::None);
 
     return win;
+}
+
+void test_video_handler(const char* path) {
+    auto win_engine = winengine::WindowEngine::getInstance();
+    auto main_mon = win_engine.getRandRInfo()[0];
+
+    auto* win = openSimpleWindow(nullptr);
+
+    winengine::VideoHandler my_movie(path, main_mon, win);
+    my_movie.setFPSlimit(60);
+    my_movie.enableVerticalSync();
+
+    my_movie.start(handle_events);
 }
