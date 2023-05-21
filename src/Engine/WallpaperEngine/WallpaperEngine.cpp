@@ -17,7 +17,7 @@ WallpaperEngine::WallpaperEngine(const Vector<XWindowHandler* >& windows) : m_di
 }
 
 void WallpaperEngine::run() {
-    while(!m_quitted) {
+    while(!m_asked_quit) {
         cycle();
     }
 }
