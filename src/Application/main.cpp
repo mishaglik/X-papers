@@ -22,7 +22,6 @@ int main() {
     
     manager->closeDisplay();
     */
-    
     test_video_handler("/home/execorn/Downloads/wallpaper.mp4");
 
     return 0;

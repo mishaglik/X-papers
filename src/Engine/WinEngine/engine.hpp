@@ -17,6 +17,8 @@ sf::RenderWindow* openSimpleWindow(winengine::MonitorInfo*);
 
 void test_video_handler(const char*);
 
+void test_open_window();
+
 void test_gl(const char*);
 
 #endif /* ENGINE_WINENGINE_ENGINE_HPP */
