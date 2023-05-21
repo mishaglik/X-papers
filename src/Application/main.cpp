@@ -6,11 +6,10 @@
 #include <unistd.h>
 #include <Utilities/defines.hpp>
 #include <Engine/WinEngine/engine.hpp>
+#include "Configurator.hpp"
 
-int main() {
+int main(int argc, const char* argv[]) {
     xppr::log::init_logger();
-    
-
     
 //     test_video_handler("/home/execorn/Downloads/wallpaper.mp4");
   
