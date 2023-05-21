@@ -13,16 +13,16 @@ GlfwController::GlfwController() : vr_state(), window() {
     }
 }
 
-void GlfwController::Start(const std::string& filename) {
-    openFromFile(filename);
-
-    createGLxWindow();
-
-    generateTexture();
-
-    allocateFrameBuffer();
+bool GlfwController::Render(const std::string& filename) {
+    if (!openFromFile(filename) || !createGLxWindow() || generateTexture() ||
+        !allocateFrameBuffer()) {
+        vr_state.Close();
+        return false;
+    }
 
     handleEvents();
+
+    return true;
 }
 
 bool GlfwController::openFromFile(const std::string& filename) {
@@ -55,7 +55,7 @@ bool GlfwController::createGLxWindow() {
 }
 
 // TODO: make this func readable
-void GlfwController::generateTexture() {
+bool GlfwController::generateTexture() {
     glfwMakeContextCurrent(window);
 
     glGenTextures(1, &tex_handle);
@@ -69,6 +69,8 @@ void GlfwController::generateTexture() {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
     glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+
+    return true;
 }
 
 bool GlfwController::allocateFrameBuffer() {

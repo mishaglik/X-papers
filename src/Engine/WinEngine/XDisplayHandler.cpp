@@ -21,6 +21,7 @@ XWindowHandler* XDisplayHandler::addWindow(pair_t coords,
     XWindowHandler* new_handler =
         new XWindowHandler(this, m_display, coords, size, border_width,
                            class_type, visual, mask, attributes);
+    m_windows_list.push_back(new_handler);
 
     ++m_total_windows;
 
@@ -28,8 +29,9 @@ XWindowHandler* XDisplayHandler::addWindow(pair_t coords,
 }
 
 XWindowHandler* XDisplayHandler::addWindow(win_t id) {
-    XWindowHandler* new_handler =
-        new XWindowHandler(this, id);
+    XWindowHandler* new_handler = new XWindowHandler(this, id);
+    m_windows_list.push_back(new_handler);
+
     ++m_total_windows;
 
     return new_handler;
@@ -57,10 +59,40 @@ int XDisplayHandler::changeWindowProperty(XWindowHandler& handler,
 std::shared_ptr<XDisplayHandler> XDisplayHandler::getInstance() {
     // nullptr as default, values should be hardcoded, we don't need anything
     // else other than nullptr there
-    [[clang::no_destroy]] static std::shared_ptr<XDisplayHandler> instance{
+    static std::shared_ptr<XDisplayHandler> instance{
         new XDisplayHandler(nullptr)};
 
     return instance;
+}
+
+bool XDisplayHandler::setBackgroundProperties(win_t target_id) {
+    auto manager = winengine::XDisplayHandler::getInstance();
+    return setBackgroundProperties(manager->addWindow(target_id));
+}
+
+bool XDisplayHandler::setBackgroundProperties(XWindowHandler* target_win) {
+    if (target_win == nullptr) {
+        return false;
+    }
+    
+    auto manager = winengine::XDisplayHandler::getInstance();
+
+    auto wintype = manager->createAtom("_NET_WM_WINDOW_TYPE", False);
+    auto desktop = manager->createAtom("_NET_WM_WINDOW_TYPE_DESKTOP", False);
+
+    target_win->changeProperty(wintype, XA_ATOM, 32, PropModeReplace,
+                        (unsigned char*)&desktop, 1);
+
+    unsigned int ints[2];
+    ints[0] = 0xFFFFFFFF;
+    ints[1] = 2;
+
+    auto wm_desktop = manager->createAtom("_NET_WM_DESKTOP", False);
+
+    target_win->changeProperty(wm_desktop, XA_ATOM, 32, PropModeReplace,
+                        (unsigned char*)ints, 2);
+
+    return true;
 }
 
 }  // namespace winengine
