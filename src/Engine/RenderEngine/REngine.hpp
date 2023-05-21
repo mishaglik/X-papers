@@ -9,6 +9,8 @@
 #include <SFML/Graphics/Text.hpp>
 #include <SFML/Graphics/Font.hpp>
 #include <SFML/Graphics/RectangleShape.hpp>
+#include <SFML/Window/Event.hpp>
+
 namespace xppr {
 
     using namespace sf; //HACK //FIXME Temproary stub
