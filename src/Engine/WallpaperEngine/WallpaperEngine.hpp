@@ -20,7 +20,7 @@ namespace xppr::wpeng {
     class WallpaperEngine {
       using XWindowHandler = winengine::XWindowHandler;
       public:
-        WallpaperEngine(const Vector<XWindowHandler* >& windows);
+        WallpaperEngine(const Vector<RenderWindow* >& windows);
 
         WallpaperEngine(const WallpaperEngine&) = delete;
         WallpaperEngine& operator=(const WallpaperEngine&) = delete;
@@ -42,8 +42,7 @@ namespace xppr::wpeng {
       private:
 
       struct Display {
-        XWindowHandler* xhandler;
-        RenderWindow renderer;
+        RenderWindow* renderer;
         Vector<WidgetBase*> widgets;
         Display() = default;
         Display(const Display&) = delete;

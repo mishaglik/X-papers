@@ -24,8 +24,6 @@ int main(int argc, const char* argv[]) {
     app.loadPlugin("build/src/Plugins/API/Python/libpaperpy.so");
     app.run();
 
-    win->hide();
-
     auto manager = winengine::XDisplayHandler::getInstance();
     manager->closeDisplay();
   
