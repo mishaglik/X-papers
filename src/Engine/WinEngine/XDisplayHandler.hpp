@@ -32,6 +32,7 @@ class XDisplayHandler {
                               win_attr_t* attributes = nullptr);
 
     XWindowHandler* addWindow(const win_t id);
+
     atom_t createAtom(const char* atom_name, int only_if_exists);
 
     int flush();
@@ -62,6 +63,10 @@ class XDisplayHandler {
     bool setBackgroundProperties(win_t target_id);
 
     bool setBackgroundProperties(XWindowHandler* target_win);
+
+    display_t* getDisplay() {
+        return m_display;
+    }
 
     friend class XWindowHandler;
 
