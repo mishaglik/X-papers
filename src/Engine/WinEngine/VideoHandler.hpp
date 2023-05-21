@@ -11,9 +11,11 @@
 #include <SFML/System/Vector2.hpp>
 #include <SFML/Window/Event.hpp>
 #include <SFML/Window/WindowStyle.hpp>
+#include <cstdint>
 #include <functional>
 #include <sfeMovie/Movie.hpp>
 
+#include "WinEngine/proto.hpp"
 #include "WindowEngine.hpp"
 #include "XWindowHandler.hpp"
 #include "XDisplayHandler.hpp"
@@ -24,8 +26,12 @@ class VideoHandler {
    public:
     VideoHandler() = delete;
 
+    ~VideoHandler();
 
-    explicit VideoHandler(const std::string& path, MonitorInfo& monitor);
+    VideoHandler(const std::string& path, const win_t win_id);
+
+    
+    VideoHandler(const std::string& path, MonitorInfo& monitor);
 
 
     void start(std::function<void(VideoHandler* video, sf::Event& ev)> func);
@@ -103,6 +109,8 @@ class VideoHandler {
     sf::RenderWindow* m_renderwindow;
 
     XWindowHandler* m_xlib_window;
+
+    win_t m_win_id = 0;
 };
 
 }  // namespace winengine

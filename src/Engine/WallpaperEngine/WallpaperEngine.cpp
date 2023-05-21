@@ -25,7 +25,7 @@ void WallpaperEngine::run() {
 void WallpaperEngine::cycle() {
 
     timeval cur_timeval;
-    gettimeofday(&cur_timeval, NULL);
+    gettimeofday(&cur_timeval, nullptr);
     uint64_t curtime = cur_timeval.tv_sec * 1000 + cur_timeval.tv_usec / 1000;
 
     // Manage events
