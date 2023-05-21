@@ -29,24 +29,44 @@ VideoHandler::VideoHandler(const std::string& path, MonitorInfo& monitor)
     }
 }
 
+VideoHandler::VideoHandler(const std::string& path, const win_t win_id)
+    : m_video_path(path), m_win_id(win_id) {
+    if (path.empty()) {
+        THROW(std::invalid_argument("empty video path"));
+    }
+
+    if (!m_renderer.openFromFile(m_video_path)) {
+        std::cout << "Opened the file\n";
+        THROW(std::runtime_error("can't open video file"));
+    }
+}
+
 void VideoHandler::start(
     std::function<void(VideoHandler* video, sf::Event& ev)> func) {
 // because xlib is NOT DOING #undef
 #undef None
-    auto m_monitor_dimensions = m_monitor_info.getDimensions();
 
-    auto width = static_cast<unsigned int>(m_monitor_dimensions.x);
-    auto height = static_cast<unsigned int>(m_monitor_dimensions.y);
+    if (m_win_id == 0) {
+        xppr::log::info("Creating new window for drawing\n");
+        
+        auto m_monitor_dimensions = m_monitor_info.getDimensions();
 
-    m_renderwindow = new sf::RenderWindow(sf::VideoMode(width - 1, height),
-                                          "X-papers", sf::Style::None);
+        auto width = static_cast<unsigned int>(m_monitor_dimensions.x) - 1;
+        auto height = static_cast<unsigned int>(m_monitor_dimensions.y);
 
-    auto m_monitor_positions = m_monitor_info.getPosition();
+        m_renderwindow = new sf::RenderWindow(sf::VideoMode(width, height),
+                                              "X-papers", sf::Style::None);
 
-    auto x_pos = static_cast<int>(m_monitor_positions.x);
-    auto y_pos = static_cast<int>(m_monitor_positions.y);
+        auto m_monitor_positions = m_monitor_info.getPosition();
 
-    m_renderwindow->setPosition({x_pos, y_pos});
+        auto x_pos = static_cast<int>(m_monitor_positions.x);
+        auto y_pos = static_cast<int>(m_monitor_positions.y);
+
+        m_renderwindow->setPosition({x_pos, y_pos});
+    } else {
+        xppr::log::info("Drawing into Xlib window with id %i\n", m_win_id);
+        m_renderwindow = new sf::RenderWindow(m_win_id);
+    }
 
     auto manager = XDisplayHandler::getInstance();
     m_xlib_window = manager->addWindow(m_renderwindow->getSystemHandle());
@@ -55,7 +75,8 @@ void VideoHandler::start(
     m_renderwindow->setFramerateLimit(m_fps_limit);
     m_renderwindow->setVerticalSyncEnabled(m_vert_sync_enabled);
 
-    m_renderer.fit(0, 0, static_cast<float>(width), static_cast<float>(height));
+    m_renderer.fit(0, 0, static_cast<float>(m_renderwindow->getSize().x),
+                   static_cast<float>(m_renderwindow->getSize().y));
     m_renderer.play();
 
     while (m_renderwindow->isOpen()) {
@@ -181,6 +202,12 @@ void VideoHandler::setCorrectWindowProperties() {
     setWindowTypeDesktop(manager);
 
     setWindowOnAllDesktops(manager);
+}
+
+VideoHandler::~VideoHandler() {
+    if (m_renderwindow != nullptr) {
+        delete m_renderwindow;
+    }
 }
 
 }  // namespace winengine

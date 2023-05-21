@@ -4,7 +4,7 @@ xpap = xpapers.connect()
 
 xpap.loadModule("bg")
 bg = xpap.bg.add(0)
-bg.addImages(["/home/gms/WP1.jpg", "/home/gms/WP2.jpg"])
+bg.addImages(["/home/execorn/wallpapers/imgs/fuji.jpg", "/home/execorn/wallpapers/imgs/fuji_2.jpg"])
 
 import os
 xpap.loadModule("build/src/Plugins/Widget/BaseWidgets/libbaseWigets.so")

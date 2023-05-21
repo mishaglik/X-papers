@@ -38,7 +38,13 @@ class XDisplayHandler {
 
     int nextEvent(event_t* event) { return XNextEvent(m_display, event); }
 
-    int closeDisplay() { return XCloseDisplay(m_display); }
+    int closeDisplay() {
+        for (auto* cur_win : m_windows_list) {
+            delete cur_win;
+        }
+
+        return XCloseDisplay(m_display);
+    }
 
     int changeWindowProperty(XWindowHandler& handler,
                              atom_t property,
@@ -53,6 +59,10 @@ class XDisplayHandler {
     XDisplayHandler(XDisplayHandler const&) = delete;
     XDisplayHandler& operator=(XDisplayHandler const&) = delete;
 
+    bool setBackgroundProperties(win_t target_id);
+
+    bool setBackgroundProperties(XWindowHandler* target_win);
+
     friend class XWindowHandler;
 
    private:
@@ -60,6 +70,8 @@ class XDisplayHandler {
 
     display_t* m_display = nullptr;
     screen_t m_screen = 0;
+
+    std::vector<XWindowHandler*> m_windows_list;
 };
 
 }  // namespace winengine

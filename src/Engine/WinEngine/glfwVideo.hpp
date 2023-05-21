@@ -46,8 +46,8 @@ class GLFWreaderState {
     static const char* av_make_error(int errnum);
 
    public:
-    int m_width = 0;
-    int m_height = 0;
+    int32_t m_width = 0;
+    int32_t m_height = 0;
 
     AVRational m_av_rational_time_base;
 
