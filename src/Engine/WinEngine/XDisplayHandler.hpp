@@ -58,6 +58,7 @@ class XDisplayHandler {
     std::size_t getTotalWindows() const { return m_total_windows; }
 
     XDisplayHandler(XDisplayHandler const&) = delete;
+
     XDisplayHandler& operator=(XDisplayHandler const&) = delete;
 
     bool setBackgroundProperties(win_t target_id);
@@ -74,6 +75,7 @@ class XDisplayHandler {
     std::size_t m_total_windows = 0;
 
     display_t* m_display = nullptr;
+    
     screen_t m_screen = 0;
 
     std::vector<XWindowHandler*> m_windows_list;

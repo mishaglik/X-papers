@@ -1,6 +1,5 @@
 #include "XDisplayHandler.hpp"
 #include <X11/Xlib.h>
-#include <memory>
 #include "WinEngine/XWindowHandler.hpp"
 
 #include "WinEngine/proto.hpp"
@@ -60,7 +59,8 @@ int XDisplayHandler::changeWindowProperty(XWindowHandler& handler,
 std::shared_ptr<XDisplayHandler> XDisplayHandler::getInstance() {
     // nullptr as default, values should be hardcoded, we don't need anything
     // else other than nullptr there
-    static std::shared_ptr<XDisplayHandler> instance = std::make_shared<XDisplayHandler>();
+    static std::shared_ptr<XDisplayHandler> instance{
+        new XDisplayHandler(nullptr)};
 
     return instance;
 }
