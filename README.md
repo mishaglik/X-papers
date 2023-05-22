@@ -89,10 +89,11 @@ xpap.loadModule("build/src/Plugins/Widget/Movie/libmovie.so")
 movie = xpap.movie.add(0)
 
 # set video path for your movie
-movie.setVideoPath("/home/execorn/Downloads/wallpaper.mp4")
+movie.setVideoPath("/home/execorn/Downloads/meow.mp4")
 
 # set the size of your video widget, and it's coordinates
-movie.fit(0, 0, 1920, 1080)
+# xpapers support python arrays!
+movie.fit([0, 0, 1920, 1080])
 
 # load module 'baseWidgets' that provides the simplest widgets out of the box
 xpap.loadModule("build/src/Plugins/Widget/BaseWidgets/libbaseWigets.so")
