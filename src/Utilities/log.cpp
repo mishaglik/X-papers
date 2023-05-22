@@ -19,7 +19,7 @@ namespace xppr::log {
 
         try {
             ConsoleSink = std::make_shared<spdlog::sinks::stderr_color_sink_mt>();
-            ConsoleSink->set_level(spdlog::level::trace);
+            ConsoleSink->set_level(spdlog::level::critical);
             ConsoleSink->set_pattern("[%x %T] [%n] <%^%l%$> %v");
 
             FileSink = std::make_shared<spdlog::sinks::rotating_file_sink_mt>("log/x-papers.log", 1024 * 1024, 5, true);
