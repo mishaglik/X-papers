@@ -69,6 +69,9 @@ class WallpaperEngine {
     Vector<ConnectorBase*> m_connectors;
 
     Vector<Display> m_displays;
+
+    Vector<meta::MetaObject* > m_registered;
+    Vector<void* > m_dlls;
     
     void cycle();
 

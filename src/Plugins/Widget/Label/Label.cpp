@@ -69,6 +69,10 @@ xppr::meta::MetaObject* LabelMgr::add(uint64_t i) {
     return bg;
 }
 
+static void
+LabelMgrDtor(xppr::meta::MetaObject* obj) {
+    delete static_cast<LabelMgr*>(obj);
+}
 
 const xppr::meta::MetaFuction LabelMgrMeths[] {
     META_METHOD(LabelMgr, add),
@@ -79,7 +83,7 @@ const xppr::meta::MetaType LabelMgrType {
     .name = "label",
     .methods = LabelMgrMeths,
     .members = nullptr, 
-    .dtor = nullptr
+    .dtor = LabelMgrDtor
 };
 
 extern "C" void init_plugin(xppr::ApplicationAPI api) { 

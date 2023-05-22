@@ -70,11 +70,16 @@ const xppr::meta::MetaFuction MovieMgrMeths[] {
     {nullptr, nullptr, nullptr}
 };
 
+static void
+MovieMgrDtor(xppr::meta::MetaObject* obj) {
+    delete static_cast<MovieMgr*>(obj);
+}
+
 const xppr::meta::MetaType MovieMgrType {
     .name = "movie",
     .methods = MovieMgrMeths,
     .members = nullptr, 
-    .dtor = nullptr
+    .dtor = MovieMgrDtor,
 };
 
 extern "C" void init_plugin(xppr::ApplicationAPI api) { 

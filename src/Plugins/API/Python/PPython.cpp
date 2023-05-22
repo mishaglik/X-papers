@@ -66,6 +66,14 @@ struct MetaPyObject {
     MetaPyMethodObject* methods[];
 };
 
+static void 
+MetaFinalize(PyObject* object) {
+    auto* meta = reinterpret_cast<MetaPyObject*>(object);
+    if(meta->self->m_type->dtor) {
+        meta->self->m_type->dtor(meta->self);
+    }
+}
+
 static const PyTypeObject DefaultMetaType {
     .ob_base =  PyVarObject_HEAD_INIT(NULL, 0)
     .tp_name = "xpapers.py_meta_class",
@@ -74,6 +82,7 @@ static const PyTypeObject DefaultMetaType {
     .tp_doc = "py_meta_class objects",
     .tp_dictoffset = offsetof(MetaPyObject, dict),
     .tp_new = PyType_GenericNew,
+    .tp_finalize = MetaFinalize,
 };
 
 template<class T>
@@ -93,11 +102,26 @@ size_t CArrSize(T* data) {
 static PyObject* MetaGetter(PyObject*, void*);
 static int MetaSetter(PyObject*, PyObject*, void*);
 
+PyCharmer::~PyCharmer() {
+    for(auto& [key, value] : m_type_map) {
+        delete value->tp_getset;
+        delete value;
+    }
+    
+    if(int res = Py_FinalizeEx()) {
+        xppr::log::error("Finalizing returned {}", res);
+    } 
+}   
+
+
 void PyCharmer::registerType(const xppr::meta::MetaType* type) {
+
+    if(m_type_map[type] != nullptr) {
+        return;
+    }
 
     assert(DefaultMetaType.tp_dict == nullptr);
     PyTypeObject* type_object = new PyTypeObject(DefaultMetaType); //TODO: Null check
-
     size_t n_members = CArrSize(type->members);
     if(n_members != 0) {
         PyGetSetDef* members = new PyGetSetDef[n_members]; //TODO: Null check
@@ -119,6 +143,7 @@ void PyCharmer::registerType(const xppr::meta::MetaType* type) {
         delete type_object->tp_getset;
         delete type_object;
         //FIXME: Pass error
+        return;
     }
     Py_INCREF(type_object);
 
@@ -135,9 +160,7 @@ void PyCharmer::init() {
 
 void PyCharmer::startScript(const char* filename) {
     // TODO: Err check
-    init();
     PyRun_SimpleFileEx(fopen(filename, "r"), filename, 1);
-    Py_FinalizeEx();
 }
 
 static PyObject* MetaGetter(PyObject* self, void* closure) {

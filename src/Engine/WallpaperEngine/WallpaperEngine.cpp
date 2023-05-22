@@ -54,6 +54,16 @@ WallpaperEngine::~WallpaperEngine() {
     for(auto* connector : m_connectors) {
         delete connector;
     }
+
+    for(auto* reg : m_registered) {
+        if(reg->m_type->dtor) {
+            reg->m_type->dtor(reg);
+        }
+    }
+
+    for(void* handle : m_dlls) {
+        dlclose(handle);
+    }
 }
 
 WPError WallpaperEngine::loadPlugin(const char* filename) {
@@ -78,7 +88,7 @@ WPError WallpaperEngine::loadPlugin(const char* filename) {
         dlclose(handle);
         return WPError::Invalid;
     }
-
+    m_dlls.push_back(handle);
     initer(ApplicationAPI(this));
     return WPError::Ok;
 }
@@ -96,6 +106,7 @@ WPError WallpaperEngine::registerClass(xppr::meta::MetaType* meta) {
 }
 
 WPError WallpaperEngine::registerObject(xppr::meta::MetaObject* meta) {
+    m_registered.push_back(meta);
     for (ConnectorBase* cb : m_connectors) {
         cb->registerObject(meta);
     }

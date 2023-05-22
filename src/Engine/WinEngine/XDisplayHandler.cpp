@@ -90,9 +90,6 @@ bool XDisplayHandler::setBackgroundProperties(XWindowHandler* target_win) {
                                XA_CARDINAL,  // note CARDINAL not ATOM
                                32, PropModeReplace, reinterpret_cast<unsigned char*>(&prop),
                                1);  // note 1
-
-    XMapWindow(manager->getDisplay(), target_win->getInternalHandler());
-
     return true;
 }
 
