@@ -1,9 +1,12 @@
-#include "Python.h"
-#include "structmember.h"
 #include "PPython.hpp"
+
+#include <structmember.h> // For MemberDef
+
 #include "PaperPy.hpp"
+
+#include <Engine/WallpaperEngine/MetaUtils.hpp>
+
 #include <Utilities/log.hpp>
-#include "Engine/WallpaperEngine/MetaUtils.hpp"
 
 using namespace xppr::meta;
 
@@ -126,7 +129,7 @@ void PyCharmer::registerType(const xppr::meta::MetaType* type) {
 void PyCharmer::init() {
     PyImport_AppendInittab("xpapers", &PyInit__xpapers);
     Py_Initialize();
-    m_main_object = buildPyObject(&m_main_object_impl);
+    m_main_object = buildPyObject(&m_main_object_instance);
     Py_INCREF(m_main_object);
 }
 
@@ -309,7 +312,7 @@ void PyCharmer::addModuleMember(xppr::meta::MetaObject* object) {
 }
 
 PyCharmer::PyCharmer() {
-    m_main_object_impl.m_type = &MainObjectType;
+    m_main_object_instance.m_type = &MainObjectType;
     
 }
 
