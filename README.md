@@ -129,7 +129,7 @@ Testing:
    2. Runtime: $\approx 95 \pm 3$  ms/frame
 
 ### Result: 
-Runtime abstraction caused $\approx 15%$ slowdown 
+Runtime abstraction caused $\approx 15 \\%$ slowdown 
 
 # 8 Features
 ## Plugins included in X-papers
