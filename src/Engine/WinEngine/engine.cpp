@@ -121,6 +121,11 @@ sf::RenderWindow* openSimpleWindow(winengine::MonitorInfo* monitor) {
                       static_cast<int>(mon_info.getDimensions().y)),
         "X-papers", sf::Style::None);
 
+    auto manager = winengine::XDisplayHandler::getInstance();
+    manager->setBackgroundProperties(win->getSystemHandle());
+    win->setSize({static_cast<unsigned int>(mon_info.getDimensions().x), static_cast<unsigned int>(mon_info.getDimensions().y)});
+    win->setPosition({0, 0});
+
     return win;
 }
 
