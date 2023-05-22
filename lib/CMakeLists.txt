@@ -16,6 +16,15 @@ FetchContent_Declare(
         GIT_REPOSITORY https://github.com/gabime/spdlog.git
         GIT_TAG v1.11.0
 )
+
+project_log("FetchContent: sfeMovie")
+FetchContent_Declare(
+        sfeMovie
+        SYSTEM
+        GIT_REPOSITORY https://github.com/Yalir/sfeMovie.git
+        GIT_TAG master
+)
+
 set(SPDLOG_BUILD_PIC ON)
 set(SPDLOG_ENABLE_PCH ON)
 FetchContent_MakeAvailable(spdlog)
