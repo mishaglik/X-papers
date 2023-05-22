@@ -1,4 +1,5 @@
 #include "XDisplayHandler.hpp"
+#include <X11/Xatom.h>
 #include <X11/Xlib.h>
 #include "WinEngine/XWindowHandler.hpp"
 
@@ -74,23 +75,23 @@ bool XDisplayHandler::setBackgroundProperties(XWindowHandler* target_win) {
     if (target_win == nullptr) {
         return false;
     }
-    
+
     auto manager = winengine::XDisplayHandler::getInstance();
 
     auto wintype = manager->createAtom("_NET_WM_WINDOW_TYPE", False);
     auto desktop = manager->createAtom("_NET_WM_WINDOW_TYPE_DESKTOP", False);
 
     target_win->changeProperty(wintype, XA_ATOM, 32, PropModeReplace,
-                        (unsigned char*)&desktop, 1);
+                               (unsigned char*)&desktop, 1);
 
-    unsigned int ints[2];
-    ints[0] = 0xFFFFFFFF;
-    ints[1] = 2;
+    unsigned long prop = 0xFFFFFFFF;  // note long! even if long is 64 bit
 
-    auto wm_desktop = manager->createAtom("_NET_WM_DESKTOP", False);
+    target_win->changeProperty(manager->createAtom("_NET_WM_DESKTOP", 1),
+                               XA_CARDINAL,  // note CARDINAL not ATOM
+                               32, PropModeReplace, (unsigned char*)&prop,
+                               1);  // note 1
 
-    target_win->changeProperty(wm_desktop, XA_ATOM, 32, PropModeReplace,
-                        (unsigned char*)ints, 2);
+    XMapWindow(manager->getDisplay(), target_win->getInternalHandler());
 
     return true;
 }
