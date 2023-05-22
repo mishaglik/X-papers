@@ -30,7 +30,8 @@ void Configurator::genConfig(int argc, const char* argv[]) {
 
     m_program_path = argv[0];
     m_program_name = basename(argv[0]);
-
+    argv++;
+    
     size_t left = argc - 1;
     while (left) {
         size_t parsed = parseArgument(argv, left);
