@@ -131,6 +131,53 @@ Testing:
 ### Result: 
 Runtime abstraction caused $\approx 15 \\%$ slowdown 
 
+## Examples of abstractions.
+This is example of poor and proper abstractions usage:
+### Bad version (Using run-time calls)
+```C++
+    struct Bordered {
+        Bordered(BaseWidget* widget) : m_widget(widget) {
+            /* Do some job...*/
+        }
+
+        void draw(RenderWindow& window) override {
+            m_widget->draw(window);
+            drawBox();
+        }
+
+        void drawBox() {
+            /*Drawing box logic*/
+        }
+
+        BaseWidget* m_widget;
+    };
+``` 
+
+### Good version (Using compile-time optimizations)
+```C++
+    template<Widget W>
+    struct Bordered : public W {
+        Bordered(W widget) : W(std::move(widget)) {
+            /* Do some job...*/
+        }
+
+        void draw(RenderWindow& window) override {
+            W::draw(window); // Here compiler will iniline this function. So we purely safe one virtual call. 
+            drawBox();
+        }
+
+        void drawBox() {
+            /*Drawing box logic*/
+        }
+    };
+``` 
+and with some template wrapping this code will become into: 
+```C++
+auto* wid = Label() | Bordered(0x00FF00FF) | OnSprite(400, 100);
+```
+
+
+
 # 8 Features
 ## Plugins included in X-papers
 1) Movie plugin
@@ -142,3 +189,6 @@ Runtime abstraction caused $\approx 15 \\%$ slowdown
 2) Templated conversion of static-typed code into dynamic-typed code
 3) Extremely simple XradnR API that provides monitors and X-displays enumeration
 4) Fast renderer based on ffmpeg and openGL
+
+## Example image
+![sample](examples/example.gif)
