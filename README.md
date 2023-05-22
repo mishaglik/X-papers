@@ -120,3 +120,24 @@ Usage ```xpapers [-d| --daemonize] [--fps] [--vs] [--help]```
 1) ```-d | --daemonize``` - daemonize X-papers
 2) ```--fps``` - set framerate limit
 3) ```--vs``` - enable Vertical Synchronization for rendering
+
+
+# 8. Absraction's performance
+## Comparison of zero-cost compile-time constructions and run-time abstractions
+Testing:
+1) Creating 10000 labels
+2) 1. Compile time: ~80ms/frame
+   2. Runtime: ~95ms/frame
+   3. Average error ~3ms
+
+# 9 Features
+## Plugins included in X-papers
+1) Movie plugin
+2) baseWidgets plugin (label / rectangle **with compile-time decorators**)
+3) python as a plugin (xpapers)
+
+## Advanced capabilities
+1) X-papers has it's own dynamic system types
+2) Templated conversion of static-typed code into dynamic-typed code
+3) Extremely simple XradnR API that provides monitors and X-displays enumeration
+4) Fast renderer based on ffmpeg and openGL
