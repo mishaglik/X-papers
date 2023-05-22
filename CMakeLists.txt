@@ -10,7 +10,7 @@ include(cmake/CheckCompiler.cmake)
 add_subdirectory(lib)
 
 include(cmake/CompileOptions.cmake)
-include(cmake/Sanitize.cmake)
+# include(cmake/Sanitize.cmake)
 include(cmake/Development.cmake)
 
 

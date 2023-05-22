@@ -82,17 +82,14 @@ bool XDisplayHandler::setBackgroundProperties(XWindowHandler* target_win) {
     auto desktop = manager->createAtom("_NET_WM_WINDOW_TYPE_DESKTOP", False);
 
     target_win->changeProperty(wintype, XA_ATOM, 32, PropModeReplace,
-                               (unsigned char*)&desktop, 1);
+                               reinterpret_cast<unsigned char*>(&desktop), 1);
 
     unsigned long prop = 0xFFFFFFFF;  // note long! even if long is 64 bit
 
     target_win->changeProperty(manager->createAtom("_NET_WM_DESKTOP", 1),
                                XA_CARDINAL,  // note CARDINAL not ATOM
-                               32, PropModeReplace, (unsigned char*)&prop,
+                               32, PropModeReplace, reinterpret_cast<unsigned char*>(&prop),
                                1);  // note 1
-
-    XMapWindow(manager->getDisplay(), target_win->getInternalHandler());
-
     return true;
 }
 

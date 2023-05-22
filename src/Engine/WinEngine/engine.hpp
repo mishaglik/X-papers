@@ -13,9 +13,9 @@
 #include "glfwRender.hpp"
 
 
-sf::RenderWindow* openSimpleWindow(winengine::MonitorInfo*);
+sf::RenderWindow* openSimpleWindow(winengine::MonitorInfo*, bool, uint32_t);
 
-void test_video_handler(const char*);
+void test_video_handler(const char* path, bool sync = false, uint32_t limit = 60);
 
 void test_open_window();
 

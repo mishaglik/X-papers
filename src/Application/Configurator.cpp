@@ -11,6 +11,8 @@
 const Configurator::ParseEntry Configurator::CommandArguments[] = {
     {"--daemonize", "Run as daemon", SET_(m_daemonize)},
     {"-d",          "Run as daemon", SET_(m_daemonize)},
+    {"--fps",          "Set FPS limit", SET_(m_framerate_limit)},
+    {"--vs",          "Enable vertical sync", SET_(m_vert_sync_enabled)},
     {"--help",      "Print help", &Configurator::help}
 };
 
@@ -65,7 +67,10 @@ size_t Configurator::parseArgument(const char* args[], size_t size) {
 }
 
 size_t Configurator::help(const char**, size_t) {
-    fmt::print("");
+    fmt::print("Hello, welcome to xpapers - animated wallpaper engine.\n");
+    fmt::print("Setup your config file to .config/xpapers.py\n");
+    fmt::print("Usage xpapers [-d| --daemonize] [--fps] [--vs] [--help] \n");
+    exit(0);
     return 1;
 }
 

@@ -103,7 +103,7 @@ void test_open_window() {
     manager->closeDisplay();
 }
 
-sf::RenderWindow* openSimpleWindow(winengine::MonitorInfo* monitor) {
+sf::RenderWindow* openSimpleWindow(winengine::MonitorInfo* monitor, bool sync = false, uint32_t limit = 60) {
     winengine::MonitorInfo mon_info;
 
     if (monitor == nullptr) {
@@ -126,17 +126,17 @@ sf::RenderWindow* openSimpleWindow(winengine::MonitorInfo* monitor) {
     win->setSize({static_cast<unsigned int>(mon_info.getDimensions().x), static_cast<unsigned int>(mon_info.getDimensions().y)});
     win->setPosition({0, 0});
 
-    win->setVerticalSyncEnabled(true);
-    win->setFramerateLimit(30);
+    win->setVerticalSyncEnabled(sync);
+    win->setFramerateLimit(limit);
 
     return win;
 }
 
-void test_video_handler(const char* path) {
+void test_video_handler(const char* path, bool sync, uint32_t limit) {
     auto win_engine = winengine::WindowEngine::getInstance();
     auto main_mon = win_engine.getRandRInfo()[0];
 
-    auto* win = openSimpleWindow(nullptr);
+    auto* win = openSimpleWindow(nullptr, sync, limit);
 
     winengine::VideoHandler my_movie(path, main_mon, win);
     my_movie.setFPSlimit(60);

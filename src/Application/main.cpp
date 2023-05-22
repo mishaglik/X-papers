@@ -14,7 +14,7 @@ int main(int argc, const char* argv[]) {
         daemonize();
     }
 
-    auto* win = openSimpleWindow(nullptr);
+    auto* win = openSimpleWindow(nullptr, cfg.isVertSyncEnabled(), cfg.getFramerateLimit());
 
     xppr::wpeng::WallpaperEngine app({win});
 
