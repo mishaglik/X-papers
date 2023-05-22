@@ -1,26 +1,17 @@
 #ifndef ENGINE_WALLPAPERENGINE_METATYPES_HPP
 #define ENGINE_WALLPAPERENGINE_METATYPES_HPP
 
-#include <stddef.h>
 #include <cstdint>
+#include <stddef.h>
+#include <string>
 #include <variant>
 #include <vector>
-#include <string>
 
-#ifdef __cplusplus
 namespace xppr::meta {
-#endif
-
 
 struct MetaType;
 struct MetaObject;
 struct ArgPack;
-
-#ifndef __cplusplus
-typedef struct MetaType MetaType;
-typedef struct MetaObject MetaObject;
-typedef struct ArgPack ArgPack;
-#endif
 
 typedef MetaObject* (*MetaCallback)(ArgPack* args);
 
@@ -36,12 +27,6 @@ enum MetaTypes {
     String,
     Object,
     Array,
-};
-
-template<class T>
-struct CArray {
-    T* data;
-    size_t size;
 };
 
 struct MetaTyped : std::variant<uint64_t, std::string, MetaObject*, std::vector<MetaTyped>> {
@@ -66,13 +51,6 @@ struct MetaTyped : std::variant<uint64_t, std::string, MetaObject*, std::vector<
         using Variant = std::variant<uint64_t, std::string, MetaObject*, std::vector<MetaTyped>>;
 };
 
-union MetaTypedEx {
-    uint64_t    m_long;
-    const char* m_string;
-    MetaObject* m_object;
-    CArray<MetaTypedEx> m_array;
-};
-
 struct MetaMember {
     const char* name;
     enum MetaTypes type;
@@ -80,10 +58,6 @@ struct MetaMember {
     bool writable;
 };
 
-#ifndef __cplusplus
-typedef struct MetaFuction MetaFuction;
-typedef struct MetaMember MetaMember;
-#endif
 
 struct MetaType {
     const char* name;
@@ -104,9 +78,6 @@ struct ArgPack {
 
 extern const MetaType ErrorType;
 
-#ifdef __cplusplus
-
-
 template<const MetaType* type>
 struct MetaObjectT : MetaObject {
     static constexpr const MetaType* const Type = type;
@@ -123,7 +94,5 @@ struct MetaError : public MetaObjectT<&ErrorType> {
     const char* m_message;
 };
 }
-
-#endif
 
 #endif /* ENGINE_WALLPAPERENGINE_METATYPES_HPP */

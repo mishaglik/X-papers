@@ -1,17 +1,16 @@
 #include <unistd.h>
+
 #include <Engine/WinEngine/engine.hpp>
-#include <SFML/Window/VideoMode.hpp>
-#include <SFML/Window/Window.hpp>
-#include <Utilities/defines.hpp>
+#include <WallpaperEngine/WallpaperEngine.hpp>
+#include <Utilities/utils.hpp>
+
 #include "Configurator.hpp"
-#include "WallpaperEngine/WallpaperEngine.hpp"
-#include "WinEngine/XDisplayHandler.hpp"
 
 int main(int argc, const char* argv[]) {
     xppr::log::init_logger();
     Configurator cfg = Configurator::fromArguments(argc, argv);
 
-    if(cfg.isDemon()) {
+    if (cfg.isDemon()) {
         daemonize();
     }
 
@@ -26,7 +25,7 @@ int main(int argc, const char* argv[]) {
 
     auto manager = winengine::XDisplayHandler::getInstance();
     manager->closeDisplay();
-  
+
     xppr::log::info("XPapers exited gracefully!");
     return 0;
 }

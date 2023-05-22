@@ -1,63 +1,78 @@
 #ifndef ENGINE_WALLPAPERENGINE_METAUTILS_HPP
 #define ENGINE_WALLPAPERENGINE_METAUTILS_HPP
+
 #include <Engine/WallpaperEngine/MetaTypes.hpp>
+
+#include <array>
 #include <concepts>
 #include <cstdint>
 #include <utility>
-#include <array>
+
 #include <Engine/WallpaperEngine/Connector.hpp>
 
 namespace xppr::meta {
 
-template<class T>
-concept Meta = std::derived_from<T, MetaObject> && std::same_as<decltype(T::Type), const MetaType* const>;
+template <class T>
+concept Meta = std::derived_from<T, MetaObject> &&
+               std::same_as<decltype(T::Type), const MetaType* const>;
 
-template<class T>
-requires std::derived_from<T, MetaObject>
+template <class T>
+    requires std::derived_from<T, MetaObject>
 T* meta_cast(MetaObject* object, const MetaType* type) {
-    if(object->m_type == type) {
+    if (object->m_type == type) {
         return static_cast<T*>(object);
     }
     return nullptr;
 }
 
-template<Meta T>
+template <Meta T>
 T* meta_cast2(MetaObject* object) {
-    if(object->m_type == T::Type) {
+    if (object->m_type == T::Type) {
         return static_cast<T*>(object);
     }
     return nullptr;
 }
+
 namespace detail {
 
-template<typename T, size_t s1, size_t s2, size_t ...Idx1, size_t ...Idx2>
-    constexpr std::array<T, sizeof...(Idx1) + sizeof...(Idx2)> ccat(std::array<T, s1>lhs, std::array<T, s2> rhs, std::index_sequence<Idx1...>, std::index_sequence<Idx2...>) {
-        return {lhs[Idx1]..., rhs[Idx2]...};
-    }
+template <typename T, size_t s1, size_t s2, size_t... Idx1, size_t... Idx2>
+constexpr std::array<T, sizeof...(Idx1) + sizeof...(Idx2)> ccat(
+    std::array<T, s1> lhs,
+    std::array<T, s2> rhs,
+    std::index_sequence<Idx1...>,
+    std::index_sequence<Idx2...>) 
+{
+    return {lhs[Idx1]..., rhs[Idx2]...};
 }
 
-template<typename T, size_t s1, size_t s2>
-constexpr std::array<T, s1 + s2 - 1> ZArrConcat(std::array<T, s1>lhs, std::array<T, s2> rhs) {
-    return detail::ccat(lhs, rhs, std::make_index_sequence<s1-1>{}, std::make_index_sequence<s2>{});
+}  // namespace detail
+
+template <typename T, size_t s1, size_t s2>
+constexpr std::array<T, s1 + s2 - 1> ZArrConcat(std::array<T, s1> lhs,
+                                                std::array<T, s2> rhs) 
+{
+    return detail::ccat(lhs, rhs, std::make_index_sequence<s1 - 1>{},
+                                  std::make_index_sequence<s2>{});
 }
 
 namespace detail {
 
     namespace traits {
+        
         template<typename T>
         struct is_meta_typed : std::false_type {};
 
         template<>
-        struct is_meta_typed<uint64_t> : std::true_type {};
+        struct is_meta_typed<uint64_t>     : std::true_type {};
 
         template<>
-        struct is_meta_typed<uint32_t> : std::true_type {};
+        struct is_meta_typed<uint32_t>     : std::true_type {};
 
         template<>
-        struct is_meta_typed<const char*> : std::true_type {};
+        struct is_meta_typed<const char*>  : std::true_type {};
         
         template<>
-        struct is_meta_typed<std::string> : std::true_type {};
+        struct is_meta_typed<std::string>  : std::true_type {};
 
         template<>
         struct is_meta_typed<MetaObject* > : std::true_type {};
@@ -254,6 +269,7 @@ constexpr static inline size_t SignatureSize(const char* format) {
 }
 
 }
+
 #define META_CALLBACK(meth)  \
     xppr::meta::detail::GetCallback<decltype(meth)>::call<meth>
 
