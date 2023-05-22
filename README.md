@@ -133,14 +133,20 @@ Runtime abstraction caused $\approx 15 \\%$ slowdown
 
 ## Examples of abstractions.
 This is example of poor and proper abstractions usage:
-### Bad version (Using run-time calls)
+### Bad version (Using run-time virtual function calls)
 ```C++
-    struct Bordered {
+   struct BaseWidget {
+        /* ... */
+        virtual void draw(RenderWindow& window) = 0;
+        /* ... */
+   };
+
+    struct Bordered  : BaseWidget{
         Bordered(BaseWidget* widget) : m_widget(widget) {
             /* Do some job...*/
         }
 
-        void draw(RenderWindow& window) override {
+        virtual void draw(RenderWindow& window) override {
             m_widget->draw(window);
             drawBox();
         }
@@ -153,7 +159,7 @@ This is example of poor and proper abstractions usage:
     };
 ``` 
 
-### Good version (Using compile-time optimizations)
+### Good version (Using template-based compile-time polymorphism)
 ```C++
     template<Widget W>
     struct Bordered : public W {
