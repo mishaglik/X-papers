@@ -2,11 +2,15 @@ import xpapers
 
 xpap = xpapers.connect()
 
-xpap.loadModule("bg")
-bg = xpap.bg.add(0)
-bg.addImages(["/home/execorn/wallpapers/imgs/fuji.jpg", "/home/execorn/wallpapers/imgs/fuji_2.jpg"])
+# xpap.loadModule("bg")
+# bg = xpap.bg.add(0)
+# bg.addImages(["/home/gms/WP1.jpg", "/home/gms/WP2.jpg"])
 
-import os
+xpap.loadModule("build/src/Plugins/Widget/Movie/libmovie.so")
+movie = xpap.movie.add(0)
+movie.setVideoPath("/home/gms/wallpaper.mp4")
+movie.fit(0, 0, 1920, 1080)
+
 xpap.loadModule("build/src/Plugins/Widget/BaseWidgets/libbaseWigets.so")
 label = xpap.wid.addBorderedLabel(0)
 label.setText("Hello, text!")

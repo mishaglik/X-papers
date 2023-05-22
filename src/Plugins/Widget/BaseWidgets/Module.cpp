@@ -10,11 +10,15 @@ struct BaseWidgetsMgr;
 
 extern const xppr::meta::MetaFuction BaseWidgetsMgrMeths[];
 
+static void
+MgrDtor(xppr::meta::MetaObject* obj);
+
+
 static const xppr::meta::MetaType BaseWidgetsMgrType{
     .name = "wid",
     .methods = BaseWidgetsMgrMeths,
     .members = nullptr,
-    .dtor = nullptr,
+    .dtor = MgrDtor,
 };
 
 struct BaseWidgetsMgr : xppr::meta::MetaObjectT<&BaseWidgetsMgrType> {
@@ -51,4 +55,9 @@ const xppr::meta::MetaFuction BaseWidgetsMgrMeths[] = {
 extern "C" void init_plugin(xppr::ApplicationAPI api) {
     xppr::log::add_logger();
     api.registerObject(new BaseWidgetsMgr{{}, api});
+}
+
+static void
+MgrDtor(xppr::meta::MetaObject* obj) {
+    delete static_cast<BaseWidgetsMgr*>(obj);
 }
