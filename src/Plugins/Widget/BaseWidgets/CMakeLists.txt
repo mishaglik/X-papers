@@ -1,6 +1,6 @@
 
 
-add_library(baseWigets MODULE Module.cpp widgets/Label.cpp)
+add_library(baseWigets MODULE Module.cpp widgets/Label.cpp widgets/Clock.cpp)
 target_include_directories(baseWigets PUBLIC .)
 target_include_directories(baseWigets PUBLIC "${PROJECT_SOURCE_DIR}/src")
 target_compile_options(baseWigets PRIVATE "-fPIC")

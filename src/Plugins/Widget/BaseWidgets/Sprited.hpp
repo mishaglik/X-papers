@@ -47,6 +47,7 @@ struct SWidget : Widget, xppr::WidgetBase {
     }
 
     virtual void update(uint64_t curtime) override {
+        m_texture.clear(sf::Color::Transparent);
         Widget::update(curtime);
     }
     /**

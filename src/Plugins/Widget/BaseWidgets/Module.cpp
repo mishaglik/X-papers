@@ -2,6 +2,7 @@
 #include <Engine/WallpaperEngine/MetaUtils.hpp>
 #include <Utilities/utils.hpp>
 #include "Plugins/Widget/BaseWidgets/widgets/Label.hpp"
+#include "Plugins/Widget/BaseWidgets/widgets/Clock.hpp"
 #include "SpriteWidget.hpp"
 #include "Sprited.hpp"
 #include "decor/Border.hpp"
@@ -38,7 +39,16 @@ struct BaseWidgetsMgr : xppr::meta::MetaObjectT<&BaseWidgetsMgrType> {
         if(i >= m_api.NDisplays()) {
             return new xppr::meta::MetaError{{}, xppr::meta::MetaError::Type::AttributeError, "Index of display is too big!"};
         }
-        auto* wid = Label() | Bordered(0x00FF00FF) | OnSprite(200, 30);
+        auto* wid = Label() | Bordered(0x00FF00FF) | OnSprite(400, 100);
+        m_api.addWidget(wid, i);
+        return wid;
+    }
+
+    xppr::meta::MetaObject* addClock(uint64_t i) {
+        if(i >= m_api.NDisplays()) {
+            return new xppr::meta::MetaError{{}, xppr::meta::MetaError::Type::AttributeError, "Index of display is too big!"};
+        }
+        auto* wid = Clock() | OnSprite(500, 400);
         m_api.addWidget(wid, i);
         return wid;
     }
@@ -48,6 +58,7 @@ struct BaseWidgetsMgr : xppr::meta::MetaObjectT<&BaseWidgetsMgrType> {
 const xppr::meta::MetaFuction BaseWidgetsMgrMeths[] = {
     // ADD_(Lab),
     META_METHOD(BaseWidgetsMgr, addBorderedLabel),
+    META_METHOD(BaseWidgetsMgr, addClock),
     {}
 };
 #undef ADD_

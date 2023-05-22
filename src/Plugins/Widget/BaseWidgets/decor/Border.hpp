@@ -1,5 +1,5 @@
-#ifndef PLUGINS_WIDGET_BASEWIDGETS_BORDER_HPP
-#define PLUGINS_WIDGET_BASEWIDGETS_BORDER_HPP
+#ifndef PLUGINS_WIDGET_BASEWIDGETS_DECOR_BORDER_HPP
+#define PLUGINS_WIDGET_BASEWIDGETS_DECOR_BORDER_HPP
 
 #include "SpriteWidget.hpp"
 #include <Engine/WallpaperEngine/MetaUtils.hpp>
@@ -22,8 +22,6 @@ constexpr const std::array<xppr::meta::MetaFuction, 2> BorderMeths =
 
 template<SpriteWidget Widget>
 constexpr const auto BorderMethsFull = xppr::meta::ZArrConcat(BorderMeths<Widget>, Widget::m_meths);
-
-
 }
 
 template<SpriteWidget W>
@@ -71,4 +69,4 @@ inline auto Bordered(uint32_t color) {
 }
 
 
-#endif /* PLUGINS_WIDGET_BASEWIDGETS_BORDER_HPP */
+#endif /* PLUGINS_WIDGET_BASEWIDGETS_DECOR_BORDER_HPP */
