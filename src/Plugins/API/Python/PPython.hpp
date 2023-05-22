@@ -10,7 +10,7 @@
 class PyCharmer {
    public:
     PyCharmer();
-    ~PyCharmer() {}
+    ~PyCharmer();
 
     void init();
 

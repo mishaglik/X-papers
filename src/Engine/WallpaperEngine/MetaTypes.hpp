@@ -63,7 +63,7 @@ struct MetaType {
     const char* name;
     const MetaFuction* methods;
     const MetaMember* members;
-    void (*dtor)();
+    void (*dtor)(MetaObject* self);
 };
 
 struct MetaObject {

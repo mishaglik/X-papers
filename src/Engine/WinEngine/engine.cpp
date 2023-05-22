@@ -126,6 +126,9 @@ sf::RenderWindow* openSimpleWindow(winengine::MonitorInfo* monitor) {
     win->setSize({static_cast<unsigned int>(mon_info.getDimensions().x), static_cast<unsigned int>(mon_info.getDimensions().y)});
     win->setPosition({0, 0});
 
+    win->setVerticalSyncEnabled(true);
+    win->setFramerateLimit(30);
+
     return win;
 }
 
