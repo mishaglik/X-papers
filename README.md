@@ -125,8 +125,8 @@ Usage ```xpapers [-d| --daemonize] [--fps] [--vs] [--help]```
 ## Comparison of zero-cost compile-time constructions and run-time abstractions
 Testing:
 1) Creating 10000 labels
-2) 1. Compile time:$\approx 80 \pm 3$
-   2. Runtime:$\approx 95 \pm 3$ 
+2) 1. Compile time: $\approx 80 \pm 3$
+   2. Runtime: $\approx 95 \pm 3$ 
 
 # 8 Features
 ## Plugins included in X-papers
