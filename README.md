@@ -2,7 +2,7 @@
 
 # 1. What is this project all about?
 This project tries to reproduce the background render capabilities of Wallpaper Engine on Linux systems. It's as simple as that. It allows you to render both image and video wallpapers with high efficiency and works with all popular Window Managers.
-### What is the origin Wallpaper Engine?
+### What is the original Wallpaper Engine?
 Original [Wallpaper Engine](https://store.steampowered.com/app/431960/Wallpaper_Engine/) is a proprietary application for Windows with a companion app on Android which allows users to use and create animated and interactive wallpapers. 
 This project provides all the same functionality with the exception of steam workshop integration.
 
