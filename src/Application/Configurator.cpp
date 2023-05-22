@@ -11,6 +11,8 @@
 const Configurator::ParseEntry Configurator::CommandArguments[] = {
     {"--daemonize", "Run as daemon", SET_(m_daemonize)},
     {"-d",          "Run as daemon", SET_(m_daemonize)},
+    {"--fps",          "Set FPS limit", SET_(m_framerate_limit)},
+    {"--vs",          "Enable vertical sync", SET_(m_vert_sync_enabled)},
     {"--help",      "Print help", &Configurator::help}
 };
 
