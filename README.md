@@ -2,12 +2,11 @@
 
 # 1. What is this project all about?
 This project tries to reproduce the background render capabilities of Wallpaper Engine on Linux systems. It's as simple as that. It allows you to render both image and video wallpapers with high efficiency and works with all popular Window Managers.
-
-# 2. What is Wallpaper Engine?
-Wallpaper Engine is an application for Windows with a companion app on Android which allows users to use and create animated and interactive wallpapers. 
+### What is the origin Wallpaper Engine?
+Original [Wallpaper Engine](https://store.steampowered.com/app/431960/Wallpaper_Engine/) is a proprietary application for Windows with a companion app on Android which allows users to use and create animated and interactive wallpapers. 
 This project provides all the same functionality with the exception of steam workshop integration.
 
-# 3. Compilation requirements
+# 2. Compilation requirements
 ## X-papers
 - OpenGL 2.1 support
 - CMake
@@ -22,13 +21,13 @@ This project provides all the same functionality with the exception of steam wor
 - Python3.10+
 - PulseAudio
 
-# 4. How to use X-papers?
+# 3. How to use X-papers?
 ## 4.1. Pre-requirements
 In order to properly use this software you'll need to install all packages required for compiling the project and get yourself a video-file for rendering.
 
 The assets themselves **must** be copied to the same folder where the binary lives.
 
-## 4.3. Getting source code
+## 3.3. Getting source code
 Download a zipped version of the repository here: https://github.com/mishaglik/X-papers
 
 You can also clone the repository using git like this:
@@ -41,7 +40,7 @@ Or using the HTTPS method if you have set up SSH:
 https://github.com/mishaglik/X-papers.git
 ```
 
-## 4.4. Compilation steps
+## 3.4. Compilation steps
 The project is built on CMake as the build engine. First we need to create the directory where the build will be stored and get into it:
 
 ```
@@ -60,7 +59,7 @@ Finally we can compile the project to generate the actual executable.
 make
 ```
 
-# 5. Running a background
+# 4. Running a background
 
 ## Main configuration is made using python scripts with just a few steps:
 1) Create python script placed in folder **install**
@@ -72,7 +71,7 @@ make
 7) After the module is loaded, use it's API to render whatever you want on the background.
 
 
-# 6. Example of simple script
+# 5. Example of simple script
 ## Here is the example of a configuration that renders background with a label "Meow, world!" on it.
 ```
 # import the main module that allows to render the background
@@ -113,7 +112,7 @@ label.setFont("/usr/share/fonts/TTF/OpenSans-Bold.ttf")
 label.setSize(27)
 ```
 
-# 7. Command line arguments
+# 6. Command line arguments
 ## To get help do ```xpapers --help```
 Setup your config file to ```.config/xpapers.py```
 Usage ```xpapers [-d| --daemonize] [--fps] [--vs] [--help]```
@@ -122,7 +121,7 @@ Usage ```xpapers [-d| --daemonize] [--fps] [--vs] [--help]```
 3) ```--vs``` - enable Vertical Synchronization for rendering
 
 
-# 8. Absraction's performance
+# 7. Absraction's performance
 ## Comparison of zero-cost compile-time constructions and run-time abstractions
 Testing:
 1) Creating 10000 labels
@@ -130,7 +129,7 @@ Testing:
    2. Runtime: ~95ms/frame
    3. Average error ~3ms
 
-# 9 Features
+# 8 Features
 ## Plugins included in X-papers
 1) Movie plugin
 2) baseWidgets plugin (label / rectangle **with compile-time decorators**)
