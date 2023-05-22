@@ -50,7 +50,11 @@ void WallpaperEngine::cycle() {
     }
 }
 
-WallpaperEngine::~WallpaperEngine() {}
+WallpaperEngine::~WallpaperEngine() {
+    for(auto* connector : m_connectors) {
+        delete connector;
+    }
+}
 
 WPError WallpaperEngine::loadPlugin(const char* filename) {
     if (strcmp(filename, "bg") == 0) {
