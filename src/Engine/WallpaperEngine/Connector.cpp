@@ -24,7 +24,7 @@ APIError ApplicationAPI::registerObject(xppr::meta::MetaObject* meta) {
 }
 
 size_t ApplicationAPI::NDisplays() {
-    return m_wallpaper->NDisplays();
+    return m_wallpaper->GetNDisplays();
 }
 
 

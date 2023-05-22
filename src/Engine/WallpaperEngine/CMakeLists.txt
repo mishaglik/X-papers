@@ -8,7 +8,6 @@ set(WP_ENGINE_HEADERS
     
 set(WP_ENGINE_SOURCES
     Background.cpp
-    Event.cpp
     Widget.cpp
     WallpaperEngine.cpp
     Connector.cpp

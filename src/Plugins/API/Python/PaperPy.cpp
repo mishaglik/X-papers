@@ -37,6 +37,12 @@ extern "C" void init_plugin(xppr::ApplicationAPI api) {
     Connector->m_charmer->startScript("install/paperconfig.py");
 }
 
+PyConnector::~PyConnector() {
+    delete m_charmer;
+    PyCharmer::Current = nullptr;
+}
+
+
 void PyConnector::registerObject(xppr::meta::MetaObject* meta) {
     m_charmer->addModuleMember(meta);
 }

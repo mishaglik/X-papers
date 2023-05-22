@@ -1,61 +1,80 @@
 #ifndef ENGINE_WALLPAPERENGINE_WALLPAPERENGINE_HPP
 #define ENGINE_WALLPAPERENGINE_WALLPAPERENGINE_HPP
-#include "WallpaperEngine/Widget.hpp"
-#include <RenderEngine/REngine.hpp>
-#include "WallpaperEngine/Connector.hpp"
-#include <WinEngine/XWindowHandler.hpp>
-#include <Utilities/utils.hpp>
+
+#include <csignal>
 #include <cstddef>
-namespace xppr::wpeng {    
 
-    enum WPError : uint64_t {
-      Ok,
-      Invalid,
-      Unknown,
-    };
+#include <RenderEngine/REngine.hpp>
+
+#include <WallpaperEngine/Connector.hpp>
+#include <WallpaperEngine/Widget.hpp>
+
+#include <Utilities/utils.hpp>
 
 
-    class WallpaperEngine {
-      using XWindowHandler = winengine::XWindowHandler;
-      public:
-        WallpaperEngine(const Vector<XWindowHandler* >& windows);
+namespace xppr::wpeng {
 
-        WallpaperEngine(const WallpaperEngine&) = delete;
-        WallpaperEngine& operator=(const WallpaperEngine&) = delete;
-      
-        ~WallpaperEngine();
-        void run();
+enum WPError : uint64_t {
+    Ok,
+    Invalid,
+    Unknown,
+};
 
-        void setBackgroundImages(const Vector<Image>& image, size_t win);
-        
+class WallpaperEngine {
 
-        WPError loadPlugin(const char* filename);
-        WPError addWidget(WidgetBase* widget, uint64_t display);
-        WPError addConnector(ConnectorBase* connector);
-        WPError registerClass(xppr::meta::MetaType* meta);
-        WPError registerObject(xppr::meta::MetaObject* meta);
-        size_t NDisplays() const {return m_displays.size();}
-      private:
+   public:
+    WallpaperEngine(const Vector<RenderWindow* >& windows);
 
-      struct Display {
-        XWindowHandler* xhandler;
-        RenderWindow renderer;
+    WallpaperEngine(const WallpaperEngine&) = delete;
+
+    WallpaperEngine& operator=(const WallpaperEngine&) = delete;
+
+    ~WallpaperEngine();
+    
+    void run();
+
+    void quit() { m_asked_quit = 1; }
+
+    WPError loadPlugin(const char* filename);
+
+    WPError addWidget(WidgetBase* widget, uint64_t display = 0);
+
+    WPError addConnector(ConnectorBase* connector);
+
+    WPError registerClass(xppr::meta::MetaType* meta);
+
+    WPError registerObject(xppr::meta::MetaObject* meta);
+
+    size_t GetNDisplays() const { return m_displays.size(); }
+
+   private:
+
+    struct Display {
+        RenderWindow* renderer;
+   
         Vector<WidgetBase*> widgets;
+   
         Display() = default;
+   
         Display(const Display&) = delete;
+   
         Display& operator=(const Display&) = delete;
-        ~Display(){
-          for(WidgetBase* widget : widgets) delete widget;
+   
+        ~Display() {
+            for (WidgetBase* widget : widgets)
+                delete widget;
         }
-      };
-
-        Vector<ConnectorBase*> m_connectors;
-        Vector<Display> m_displays;
-        bool m_quitted = false;
-        void cycle();
-      
     };
 
-}
+    Vector<ConnectorBase*> m_connectors;
+
+    Vector<Display> m_displays;
+    
+    void cycle();
+
+    volatile std::sig_atomic_t m_asked_quit = 0;
+};
+
+}  // namespace xppr::wpeng
 
 #endif /* ENGINE_WALLPAPERENGINE_WALLPAPERENGINE_HPP */

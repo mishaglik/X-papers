@@ -31,6 +31,8 @@ namespace xppr {
 
 #define NOT_IMPLEMENTED xppr::log::critical("{}:{}:{} not implemented", __FILE__, __LINE__, __PRETTY_FUNCTION__); THROW(std::runtime_error("Not implemented"))
 
+#define SIZEOF_ARR(x) (sizeof(x) / sizeof(x[0]))
+
 // timestamp: [ERROR] module: 
 
 }

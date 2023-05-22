@@ -16,7 +16,7 @@ class GlfwController {
     public:
     GlfwController();
 
-    void Start(const std::string& filename);
+    bool Render(const std::string& filename);
 
     private:
 
@@ -24,7 +24,7 @@ class GlfwController {
 
     bool createGLxWindow();
 
-    void generateTexture();
+    bool generateTexture();
 
     bool allocateFrameBuffer();
 
