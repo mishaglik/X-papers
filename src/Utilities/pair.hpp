@@ -4,7 +4,7 @@
 #include <concepts>
 namespace xppr {
 
-template<typename T>
+template <typename T>
 concept Copyable = std::copyable<T>;
 template <Copyable T>
 struct pair_impl {
@@ -16,6 +16,11 @@ struct pair_impl {
 
     constexpr pair_impl(pair_impl<T>&& other) : x(other.x), y(other.y) {
         other.x = other.y = T();
+    }
+
+    template <typename U>
+    operator pair_impl<U>() const {
+        return pair_impl<U>(static_cast<U>(x), static_cast<U>(y));
     }
 
     pair_impl& operator=(const pair_impl& other) = default;

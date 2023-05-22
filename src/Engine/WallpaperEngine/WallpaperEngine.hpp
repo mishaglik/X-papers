@@ -5,6 +5,8 @@
 #include "WallpaperEngine/Connector.hpp"
 #include <WinEngine/XWindowHandler.hpp>
 #include <Utilities/utils.hpp>
+#include <csignal>
+
 #include <cstddef>
 namespace xppr::wpeng {    
 
@@ -18,13 +20,15 @@ namespace xppr::wpeng {
     class WallpaperEngine {
       using XWindowHandler = winengine::XWindowHandler;
       public:
-        WallpaperEngine(const Vector<XWindowHandler* >& windows);
+        WallpaperEngine(const Vector<RenderWindow* >& windows);
 
         WallpaperEngine(const WallpaperEngine&) = delete;
         WallpaperEngine& operator=(const WallpaperEngine&) = delete;
       
         ~WallpaperEngine();
         void run();
+
+        void quit() {m_asked_quit = 1;}
 
         void setBackgroundImages(const Vector<Image>& image, size_t win);
         
@@ -38,8 +42,7 @@ namespace xppr::wpeng {
       private:
 
       struct Display {
-        XWindowHandler* xhandler;
-        RenderWindow renderer;
+        RenderWindow* renderer;
         Vector<WidgetBase*> widgets;
         Display() = default;
         Display(const Display&) = delete;
@@ -51,9 +54,10 @@ namespace xppr::wpeng {
 
         Vector<ConnectorBase*> m_connectors;
         Vector<Display> m_displays;
-        bool m_quitted = false;
         void cycle();
       
+        volatile std::sig_atomic_t m_asked_quit = 0;
+
     };
 
 }

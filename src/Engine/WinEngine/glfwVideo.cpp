@@ -1,5 +1,6 @@
 #include "glfwVideo.hpp"
 #include <X11/Xlib.h>
+#include <algorithm>
 #include "Utilities/log.hpp"
 
 namespace winengine {
@@ -22,10 +23,10 @@ AVPixelFormat GLFWreaderState::correct_for_deprecated_pixel_format(
     }
 }
 
-const char* GLFWreaderState::av_make_error(int errnum) {
+const char* GLFWreaderState::av_make_error(int32_t errnum) {
     static char str[AV_ERROR_MAX_STRING_SIZE];
     
-    memset(str, 0, sizeof(str));
+    std::fill(str, str + sizeof(str), 0);
 
     return av_make_error_string(str, AV_ERROR_MAX_STRING_SIZE, errnum);
 }
@@ -54,7 +55,7 @@ bool GLFWreaderState::Open(const std::string& filename) {
     // Open the file using libavformat
     cur_format_ctx = avformat_alloc_context();
     if (!cur_format_ctx) {
-        xppr::log::error("Couldn't created AVFormatContext\n");
+        xppr::log::error("Couldn't create AVFormatContext\n");
         return false;
     }
 
@@ -80,7 +81,7 @@ bool GLFWreaderState::Open(const std::string& filename) {
         }
 
         if (av_codec_params->codec_type == AVMEDIA_TYPE_VIDEO) {
-            cur_video_stream_index = i;
+            cur_video_stream_index = static_cast<int32_t>(i);
 
             cur_width = av_codec_params->width;
             cur_height = av_codec_params->height;
@@ -151,7 +152,7 @@ bool GLFWreaderState::readFrame(uint8_t* frame_buffer, int64_t* pts) {
 
     auto& cur_av_packet = this->m_av_packet;
 
-    int response = 0;
+    int32_t response = 0;
 
     while (av_read_frame(cur_format_ctx, cur_av_packet) >= 0) {
         if (cur_av_packet->stream_index != cur_video_stream_index) {
@@ -202,7 +203,7 @@ bool GLFWreaderState::readFrame(uint8_t* frame_buffer, int64_t* pts) {
 
     uint8_t* dest[4] = {frame_buffer, nullptr, nullptr, nullptr};
 
-    int dest_linesize[4] = {cur_width * 4, 0, 0, 0};
+    int32_t dest_linesize[4] = {cur_width * 4, 0, 0, 0};
 
     sws_scale(m_sws_scaler_ctx, cur_av_frame->data, cur_av_frame->linesize, 0,
               cur_av_frame->height, dest, dest_linesize);
@@ -226,7 +227,7 @@ bool GLFWreaderState::seekFrame(int64_t ts) {
     // av_seek_frame takes effect after one frame, so I'm decoding one here
     // so that the next call to video_reader_read_frame() will give the correct
     // frame
-    int response = 0;
+    int32_t response = 0;
 
     while (av_read_frame(av_format_ctx, av_packet) >= 0) {
         if (av_packet->stream_index != video_stream_index) {

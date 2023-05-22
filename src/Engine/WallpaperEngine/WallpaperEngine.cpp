@@ -7,17 +7,16 @@
 #include <dlfcn.h>
 namespace xppr::wpeng {
 
-WallpaperEngine::WallpaperEngine(const Vector<XWindowHandler* >& windows) : m_displays(windows.size())
+WallpaperEngine::WallpaperEngine(const Vector<RenderWindow* >& windows) : m_displays(windows.size())
 {
     for(size_t i = 0; i < windows.size(); ++i) {
-        m_displays[i].xhandler = windows[i];
-        m_displays[i].renderer.create(windows[i]->getInternalHandler());
-        m_displays[i].widgets.push_back(new Background(m_displays[i].renderer.getSize()));
+        m_displays[i].renderer = windows[i];
+        m_displays[i].widgets.push_back(new Background(m_displays[i].renderer->getSize()));
     }
 }
 
 void WallpaperEngine::run() {
-    while(!m_quitted) {
+    while(!m_asked_quit) {
         cycle();
     }
 }
@@ -25,7 +24,7 @@ void WallpaperEngine::run() {
 void WallpaperEngine::cycle() {
 
     timeval cur_timeval;
-    gettimeofday(&cur_timeval, NULL);
+    gettimeofday(&cur_timeval, nullptr);
     uint64_t curtime = cur_timeval.tv_sec * 1000 + cur_timeval.tv_usec / 1000;
 
     // Manage events
@@ -36,10 +35,10 @@ void WallpaperEngine::cycle() {
         }
 
         for(WidgetBase* widget : display.widgets){
-            widget->draw(display.renderer);
+            widget->draw(*display.renderer);
         }
 
-        display.renderer.display();
+        display.renderer->display();
     }
 
 }

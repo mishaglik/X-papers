@@ -2,6 +2,8 @@
 /// Headers
 ////////////////////////////////////////////////////////////
 #include "VideoHandler.hpp"
+#include <X11/X.h>
+#include <X11/Xlib.h>
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/System/Vector2.hpp>
 #include <SFML/Window/Event.hpp>
@@ -14,11 +16,12 @@
 
 #include <sfeMovie/Movie.hpp>
 #include <stdexcept>
+#include "WinEngine/WindowEngine.hpp"
 
 namespace winengine {
 
-VideoHandler::VideoHandler(const std::string& path, MonitorInfo& monitor)
-    : m_video_path(path), m_renderer(), m_monitor_info(monitor) {
+VideoHandler::VideoHandler(const std::string& path, MonitorInfo& monitor, sf::RenderWindow* win)
+    : m_video_path(path), m_renderer(), m_monitor_info(monitor), m_renderwindow(win) {
     if (path.empty()) {
         THROW(std::invalid_argument("empty video path"));
     }
@@ -27,27 +30,32 @@ VideoHandler::VideoHandler(const std::string& path, MonitorInfo& monitor)
         std::cout << "Opened the file\n";
         THROW(std::runtime_error("can't open video file"));
     }
+
+    // because xlib is NOT DOING #undef
+    #undef None
+    auto m_monitor_dimensions = m_monitor_info.getDimensions();
+
+    auto width = static_cast<unsigned int>(m_monitor_dimensions.x) - 1;
+    auto height = static_cast<unsigned int>(m_monitor_dimensions.y);
+
+    auto m_monitor_positions = m_monitor_info.getPosition();
+    auto x_pos = static_cast<int>(m_monitor_positions.x);
+    auto y_pos = static_cast<int>(m_monitor_positions.y);
+    
+    if (m_renderwindow == nullptr) {
+        xppr::log::info("Creating new window for drawing\n");
+
+        m_renderwindow = new sf::RenderWindow(sf::VideoMode(width, height),
+                                                "X-papers", sf::Style::None);
+    } else {
+        m_renderwindow->setSize({width, height});
+    }
+
+    m_renderwindow->setPosition({x_pos, y_pos});
 }
 
 void VideoHandler::start(
     std::function<void(VideoHandler* video, sf::Event& ev)> func) {
-// because xlib is NOT DOING #undef
-#undef None
-    auto m_monitor_dimensions = m_monitor_info.getDimensions();
-
-    auto width = static_cast<unsigned int>(m_monitor_dimensions.x);
-    auto height = static_cast<unsigned int>(m_monitor_dimensions.y);
-
-    m_renderwindow = new sf::RenderWindow(sf::VideoMode(width - 1, height),
-                                          "X-papers", sf::Style::None);
-
-    auto m_monitor_positions = m_monitor_info.getPosition();
-
-    auto x_pos = static_cast<int>(m_monitor_positions.x);
-    auto y_pos = static_cast<int>(m_monitor_positions.y);
-
-    m_renderwindow->setPosition({x_pos, y_pos});
-
     auto manager = XDisplayHandler::getInstance();
     m_xlib_window = manager->addWindow(m_renderwindow->getSystemHandle());
     setCorrectWindowProperties();
@@ -55,7 +63,8 @@ void VideoHandler::start(
     m_renderwindow->setFramerateLimit(m_fps_limit);
     m_renderwindow->setVerticalSyncEnabled(m_vert_sync_enabled);
 
-    m_renderer.fit(0, 0, static_cast<float>(width), static_cast<float>(height));
+    m_renderer.fit(0, 0, static_cast<float>(m_renderwindow->getSize().x),
+                   static_cast<float>(m_renderwindow->getSize().y));
     m_renderer.play();
 
     while (m_renderwindow->isOpen()) {
@@ -63,25 +72,10 @@ void VideoHandler::start(
         if (!(m_renderer.getStatus() == sfe::Playing)) {
             m_renderer.play();
         }
+
         while (m_renderwindow->pollEvent(ev)) {
             // handle events by user
             func(this, ev);
-            /*
-            if (ev.type == sf::Event::Closed ||
-                (ev.type == sf::Event::KeyPressed &&
-                 ev.key.code == sf::Keyboard::Escape)) {
-                m_renderwindow->close();
-            }
-
-            if (ev.type == sf::Event::Resized) {
-                m_renderer.fit(0, 0, m_renderwindow->getSize().x,
-                                     m_renderwindow->getSize().y);
-                m_renderwindow->setView(
-                    sf::View(sf::FloatRect(0, 0,
-            (float)m_renderwindow->getSize().x,
-                                           (float)m_renderwindow->getSize().y)));
-            }
-            */
         }
 
         m_renderer.update();
@@ -95,6 +89,8 @@ void VideoHandler::start(
 }
 
 void VideoHandler::setFPSlimit(const uint32_t new_limit) {
+    xppr::log::info("FPS limit set at %u", new_limit);
+
     m_fps_limit = new_limit;
 }
 
@@ -158,8 +154,9 @@ int VideoHandler::setWindowTypeDesktop(
 
     auto desktop = manager->createAtom("_NET_WM_WINDOW_TYPE_DESKTOP", False);
 
-    return m_xlib_window->changeProperty(wintype, XA_ATOM, 32, PropModeReplace,
-                                         (unsigned char*)&desktop, 1);
+    return m_xlib_window->changeProperty(
+        wintype, XA_ATOM, 32, PropModeReplace,
+        reinterpret_cast<unsigned char*>(&desktop), 1);
 }
 
 int VideoHandler::setWindowOnAllDesktops(
@@ -172,7 +169,8 @@ int VideoHandler::setWindowOnAllDesktops(
     auto wm_desktop = manager->createAtom("_NET_WM_DESKTOP", False);
 
     return m_xlib_window->changeProperty(
-        wm_desktop, XA_ATOM, 32, PropModeReplace, (unsigned char*)ints, 2);
+        wm_desktop, XA_ATOM, 32, PropModeReplace,
+        reinterpret_cast<unsigned char*>(ints), 2);
 }
 
 void VideoHandler::setCorrectWindowProperties() {
@@ -181,6 +179,12 @@ void VideoHandler::setCorrectWindowProperties() {
     setWindowTypeDesktop(manager);
 
     setWindowOnAllDesktops(manager);
+}
+
+VideoHandler::~VideoHandler() {
+    if (m_renderwindow != nullptr) {
+        delete m_renderwindow;
+    }
 }
 
 }  // namespace winengine
