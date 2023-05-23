@@ -89,8 +89,8 @@ movie = xpap.movie.add(0)
 movie.setVideoPath("/home/execorn/Downloads/meow.mp4")
 
 # set the size of your video widget, and it's coordinates
-# xpapers support python arrays!
-movie.fit([0, 0, 1920, 1080])
+# note: xpapers support python arrays as well
+movie.fit(0, 0, 1920, 1080)
 
 # load module 'baseWidgets' that provides the simplest widgets out of the box
 xpap.loadModule("build/src/Plugins/Widget/BaseWidgets/libbaseWigets.so")
@@ -196,5 +196,5 @@ auto* wid = Label() | Bordered(0x00FF00FF) | OnSprite(400, 100);
 3) Extremely simple XradnR API that provides monitors and X-displays enumeration
 4) Fast renderer based on ffmpeg and openGL
 
-## Example image
+## Demonstration gif
 ![sample](examples/example.gif)
